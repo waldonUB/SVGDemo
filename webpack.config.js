@@ -4,9 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin'); // 可以把缓存�
 const VueLoaderPlugin = require('vue-loader/lib/plugin') // vue-loader@15时,请确保引入这个插件！
 const CopyPlugin = require('copy-webpack-plugin'); // 拷贝静态资源
 
-/**
- * 用来配置别名
- * */
+
 function resolve (dir) {
     return path.join(__dirname, '..', dir)
 }
@@ -20,6 +18,7 @@ module.exports = {
         port: 9000
     },
     resolve: {
+        extensions: ['.js', '.vue', '.json'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js', // 用 webpack 1 时需用 'vue/dist/vue.common.js'
             '@': resolve('src'),
@@ -27,9 +26,6 @@ module.exports = {
             'test': resolve('test/')
         }
     },
-    // node: {
-    //     fs: 'empty'
-    // },
     module: {
         rules: [{
             test: /\.html$/,
@@ -55,8 +51,8 @@ module.exports = {
                 //     loader: 'px2rem-loader',
                 //     // options here
                 //     options: {
-                //         remUnit: 16,
-                //         remPrecision: 2
+                //         remUnit: 75,
+                //         remPrecision: 4
                 //     }
                 // },
                 'sass-loader'

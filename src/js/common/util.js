@@ -1,3 +1,6 @@
+const convert = require('xml-js');
+const BPMN_URL = "./static/initial.bpmn" // 可在webpack.config复制静态资源的插件指定
+
 function getUUID () {
     const s = [];
     const hexDigits = "0123456789abcdef";
@@ -10,4 +13,21 @@ function getUUID () {
     return s.join("");
 }
 
-export {getUUID}
+const getInitBpmn = (function () {
+    let initXML
+    return function() {
+        if (!initXML) {
+            let xhr = new XMLHttpRequest();
+            xhr.open('get', BPMN_URL)
+            xhr.send()
+            xhr.onload = function (res) {
+                initXML = convert.xml2json(res.target.responseText, {compact: false, spaces: 4});
+                return initXML
+            }
+        } else {
+            return initXML
+        }
+    }
+}())
+
+export {getUUID, getInitBpmn}

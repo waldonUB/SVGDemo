@@ -1,3 +1,4 @@
+@import "./base";
 .wrapper {
   height: 100%;
   -webkit-box-sizing: border-box;
@@ -5,15 +6,14 @@
   box-sizing: border-box;
   display: flex;
   flex-flow: column nowrap;
-  border: 1px solid black;
 }
 
 .wrapper > div {
   box-sizing: border-box;
-  border: 1px solid black;
 }
 
 .header {
+  position: relative;
   flex: 1 1 0;
 }
 .header ul {
@@ -25,7 +25,7 @@
   padding: 0 20px;
 }
 
-/*头部图标*/
+/*头部功能图标*/
 .icon-header {
   list-style: none;
   font-size: 32px !important;
@@ -39,6 +39,17 @@
   text-align: center;
 }
 
+/**workflow图标*/
+.work-flow-icon {
+  position: absolute;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  right: 50px;
+  width: 80px;
+  height: 80px;
+  color: rgba(51, 172, 126, 0.7);
+}
 .main {
   flex: 6 1 0;
   display: flex;
@@ -48,6 +59,7 @@
 .main > .left {
   position: relative;
   flex: 1 1 0;
+  @include unreal-border;
 }
 
 .main > .left ul {
@@ -75,8 +87,9 @@
 
 .main > .center {
   position: relative;
-  border: 1px solid black;
+  @include unreal-border;
   flex: 6 1 0;
+  background-color: rgba(215, 239, 255, 0.1);
 }
 
 .center > #designArea {
@@ -86,6 +99,7 @@
 
 .main > .right {
   flex: 2 1 0;
+  @include unreal-border;
 }
 
 .footer {

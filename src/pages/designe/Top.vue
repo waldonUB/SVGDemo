@@ -1,5 +1,10 @@
 <template>
     <div id="headerNode" class="header">
+        <div class="work-flow-icon">
+            <svg class="icon" aria-hidden="true">
+                <use xlink:href="#iconworkflow1"></use>
+            </svg>
+        </div>
         <ul>
             <li class="iconfont iconsave icon-header"></li>
             <li class="iconfont iconcopy icon-header"></li>

@@ -1,33 +1,8 @@
 'use strict'
-import {getUUID} from "../common/util";
-// var convert = require('xml-js');
-// var fs = require('fs-extra')
-// var xml = fs.readFileSync('test.xml', 'utf8');
-// var options = {ignoreComment: true, alwaysChildren: true};
-// var options = {compact: true, elementNameFn: function(val) {return val.replace('foo:','').toUpperCase();}};
-// var xml = '<foo:Name>Ali</Name> <bar:Age>30</bar:Age>';
-// var result = convert.xml2json(xml, options); // or convert.xml2json(xml, options)
-// console.log(result);
-var path = require("path")
-var xhr = new XMLHttpRequest();
-xhr.open('get', "../../../static/initial.bpmn")
-xhr.send()
-xhr.onload = function (res) {
-    console.log(res)
-}
-console.log(path.resolve(__dirname))
-var convert = require('xml-js');
-var xml =
-    '<?xml version="1.0" encoding="utf-8"?>' +
-    '<note importance="high" logged="true">' +
-    '    <title>Happy</title>' +
-    '    <todo>Work</todo>' +
-    '    <todo>Play</todo>' +
-    '</note>';
-var result1 = convert.xml2json(xml, {compact: true, spaces: 4});
-var result2 = convert.xml2json(xml, {compact: false, spaces: 4});
-// console.log(result1, '\n', result2);
+import {getUUID, getInitBpmn} from "../common/util";
 
+getInitBpmn()
+setTimeout(getInitBpmn, 3000)
 const nodes = document.getElementsByClassName("b-node") // 获取的所有流程节点
 const headerNode = document.getElementById("headerNode") // 头部容器
 const toolBox = document.getElementById("toolBox")// 左边工具栏
@@ -49,7 +24,7 @@ for (let node of nodes) {
     node.addEventListener('mousedown', function (e) {
         e.preventDefault() // 阻止默认事件
         selectNode = node.cloneNode(true)
-        selectNode.style.position = 'absolute'
+        selectNode.style.position = 'fixed'
         selectNode.style.listStyle = 'none'
         selectNode.style.border = '2px solid rgba(131, 208, 242, 1)'
         selectNode.style.backgroundColor = 'rgba(131, 208, 242, 0.2)'
