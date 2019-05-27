@@ -3,6 +3,11 @@
         <top></top>
         <div id="ToolContainer" class="main" data-content="">
             <div id="toolBox" class="left" data-content="">
+                <panel-header>
+                    <template v-slot:headName>
+                        流程节点
+                    </template>
+                </panel-header>
                 <ul>
                     <li id="startEvent" class="b-node">
                         <img src="../assets/img/startEvent.png" alt="startEvent">
@@ -51,6 +56,11 @@
                 </ul>
             </div>
             <div id="center" class="center">
+                <panel-header>
+                    <template v-slot:headName>
+                        流程图设计
+                    </template>
+                </panel-header>
                 <svg id="designArea">
                     <defs>
                         <marker id="myArrow" viewBox="0 0 20 1" refX="20" refY="0" markerWidth="20" markerHeight="20" orient="auto">
@@ -65,18 +75,31 @@
                     <!--<line x1="295" y1="50" x2="95" y2="75" stroke="#000" stroke-width="5" marker-end="url(#arrow)"></line>-->
                 </svg>
             </div>
-            <div class="right"></div>
+            <div class="right">
+                <panel-header>
+                    <template v-slot:headName>
+                        属性配置
+                    </template>
+                </panel-header>
+            </div>
         </div>
-        <div class="footer"></div>
+        <div class="footer">
+            <panel-header>
+                <template v-slot:headName>
+                    流程插件配置
+                </template>
+            </panel-header>
+        </div>
     </div>
 </template>
 
 <script>
     // import '../js/design/flow.js'
-    import Top from "./designe/Top.vue"
+    import Top from "pages/designe/Top"
+    import PanelHeader from "components/PanelHeader"
     export default {
         name: "Flow",
-        components: {Top},
+        components: {Top, PanelHeader},
         data() {
             return {}
         },
@@ -88,5 +111,10 @@
 </script>
 
 <style lang="scss" scoped>
-
+    .footer /deep/ .panel-header {
+        height: 10%;
+    }
+    #center /deep/ .panel-header {
+        position: absolute;
+    }
 </style>
