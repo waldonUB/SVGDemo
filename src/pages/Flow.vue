@@ -4,7 +4,7 @@
         <div id="ToolContainer" class="main" data-content="">
             <div id="toolBox" class="left" data-content="">
                 <panel-header>
-                    <template v-slot:headName>
+                    <template #headName>
                         流程节点
                     </template>
                 </panel-header>
@@ -57,7 +57,7 @@
             </div>
             <div id="center" class="center">
                 <panel-header>
-                    <template v-slot:headName>
+                    <template #headName>
                         流程图设计
                     </template>
                 </panel-header>
@@ -75,17 +75,20 @@
                     <!--<line x1="295" y1="50" x2="95" y2="75" stroke="#000" stroke-width="5" marker-end="url(#arrow)"></line>-->
                 </svg>
             </div>
-            <div class="right">
-                <panel-header>
-                    <template v-slot:headName>
-                        属性配置
-                    </template>
-                </panel-header>
-            </div>
+            <attr-config>
+                <!--作用域插槽控制对不同节点属性配置的渲染-->
+                <template v-slot="{attrList}">
+                    <attr-config-panel v-for="item of attrList" :key="item.code">
+                        <template #attrName>
+                            {{item.name}}
+                        </template>
+                    </attr-config-panel>
+                </template>
+            </attr-config>
         </div>
         <div class="footer">
             <panel-header>
-                <template v-slot:headName>
+                <template #headName>
                     流程插件配置
                 </template>
             </panel-header>
@@ -96,12 +99,16 @@
 <script>
     // import '../js/design/flow.js'
     import Top from "pages/designe/Top"
+    import AttrConfig from "pages/designe/AttrConfig"
     import PanelHeader from "components/PanelHeader"
+    import AttrConfigPanel from "components/AttrConfigPanel"
     export default {
         name: "Flow",
-        components: {Top, PanelHeader},
+        components: {Top, AttrConfig, PanelHeader, AttrConfigPanel},
         data() {
-            return {}
+            return {
+
+            }
         },
         methods: {},
         mounted() {
