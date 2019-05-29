@@ -19,6 +19,7 @@
         components: {PanelHeader, AttrConfigPanel},
         data() {
             return {
+                // 针对流程面板和流程节点渲染出不同的属性，未来再扩展流程插件配置
                 attrList: [
                     {
                         name: `流程：`,

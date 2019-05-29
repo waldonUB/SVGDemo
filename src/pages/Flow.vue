@@ -78,7 +78,11 @@
             <attr-config>
                 <!--作用域插槽控制对不同节点属性配置的渲染-->
                 <template v-slot="{attrList}">
-                    <attr-config-panel v-for="item of attrList" :key="item.code">
+                    <attr-config-panel
+                            v-for="item of attrList"
+                            :key="item.code"
+                            :attrInfo="item">
+                        <!--属性配置中各个属性标题-->
                         <template #attrName>
                             {{item.name}}
                         </template>
@@ -107,7 +111,7 @@
         components: {Top, AttrConfig, PanelHeader, AttrConfigPanel},
         data() {
             return {
-
+                warning: `<button>333</button>`
             }
         },
         methods: {},

@@ -53,8 +53,8 @@ module.exports = {
                 //     loader: 'px2rem-loader',
                 //     // options here
                 //     options: {
-                //         remUnit: 75,
-                //         remPrecision: 4
+                //         remUnit: 28,
+                //         remPrecision: 8
                 //     }
                 // },
                 'sass-loader'

@@ -4,13 +4,46 @@
             <slot name="attrName"></slot>
             <i class="iconfont iconxiala1 icon-panel-header" :class="foldState" @click="toggleFold"></i>
         </div>
-        <div class="panel-body"></div>
+        <!--循环列表中DOM结构变化比较复杂，在子组件控制panelBody-->
+        <div class="panel-body">
+            <div class="input-group" v-if="attrInfo.code === '001'">
+                <div class="input-form">
+                    <label for="processName">名称</label>
+                    <input class="attr-input" id="processName" type="text">
+                </div>
+                <div class="input-form">
+                    <label for="describe">描述</label>
+                    <input class="attr-input" id="describe" type="text">
+                </div>
+            </div>
+            <div v-else-if="attrInfo.code === '002'">
+                <button class="success">设置所有表单</button>
+            </div>
+            <div v-else-if="attrInfo.code === '003'">
+                <button class="success">设置所有节点人员</button>
+            </div>
+            <div v-else-if="attrInfo.code === '004'">
+                <button class="success">设置所有节点按钮</button>
+            </div>
+            <div v-else-if="attrInfo.code === '005'">
+                005
+            </div>
+            <div v-else>
+
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
         name: "AttrConfigPanel",
+        props: {
+            attrInfo: {
+                require: true,
+                type: Object
+            }
+        },
         data() {
             return {
                 foldState: 'unfold'
@@ -44,7 +77,24 @@
         }
     }
     .panel-body{
-        min-height: 50px;
+        height: 100px;
+        background: rgba(209, 222, 239, 0.1);
+        .input-group {
+            @include to-flex(column);
+            height: 100%;
+            align-items: center;
+            justify-content: space-around;
+            .input-form {
+                /*flex: 1;*/
+                label {
+                    margin: 0 5px;
+                    color: rgb(52, 73, 94);
+                }
+                .attr-input {
+                    @include attr-input
+                }
+            }
+        }
     }
     @keyframes to-fold {
         0%   {transform: rotate(0);}
