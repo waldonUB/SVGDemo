@@ -3,7 +3,7 @@
         <top></top>
         <div id="ToolContainer" class="main" data-content="">
             <div id="toolBox" class="left" data-content="">
-                <panel-header>
+                <panel-header ref="processNode">
                     <template #headName>
                         流程节点
                     </template>
@@ -81,10 +81,13 @@
                     <attr-config-panel
                             v-for="item of attrList"
                             :key="item.code"
-                            :attrInfo="item">
+                            :attrInfo="item" @editProcessName="updateProcessName">
                         <!--属性配置中各个属性标题-->
                         <template #attrName>
                             {{item.name}}
+                            <span v-if="item.code === '001'">
+                                {{processInfo.processName}}
+                            </span>
                         </template>
                     </attr-config-panel>
                 </template>
@@ -111,10 +114,17 @@
         components: {Top, AttrConfig, PanelHeader, AttrConfigPanel},
         data() {
             return {
-                warning: `<button>333</button>`
+                processInfo: {
+                    processName: '',
+                    describe: ''
+                }
             }
         },
-        methods: {},
+        methods: {
+            updateProcessName(data) {
+                this.processInfo.processName = data
+            }
+        },
         mounted() {
             import('../js/design/flow.js')
         }

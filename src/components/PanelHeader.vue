@@ -8,7 +8,11 @@
 
 <script>
     export default {
-        name: "PanelHeader"
+        name: "PanelHeader",
+        data() {
+            return {
+            }
+        }
     }
 </script>
 

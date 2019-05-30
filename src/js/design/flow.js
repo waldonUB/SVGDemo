@@ -134,8 +134,8 @@ function bodyMouseup(e) {
             line.setAttribute("x2", endNodeInfo['left']['x'])
             line.setAttribute("y2", endNodeInfo['left']['y'])
             designArea.appendChild(line)
-            debugger
-            let lineInfo = line.getBBox()
+            // debugger
+            // let lineInfo = line.getBBox()
             linesInfo.push(line)
             startNodeInfo = {}
             endNodeInfo = {}

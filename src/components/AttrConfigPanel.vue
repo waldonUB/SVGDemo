@@ -9,11 +9,11 @@
             <div class="input-group" v-if="attrInfo.code === '001'">
                 <div class="input-form">
                     <label for="processName">名称</label>
-                    <input class="attr-input" id="processName" type="text">
+                    <input class="attr-input" id="processName" type="text" v-model="processInfo.processName">
                 </div>
                 <div class="input-form">
                     <label for="describe">描述</label>
-                    <input class="attr-input" id="describe" type="text">
+                    <input class="attr-input" id="describe" type="text" v-model="processInfo.describe">
                 </div>
             </div>
             <div v-else-if="attrInfo.code === '002'">
@@ -46,7 +46,16 @@
         },
         data() {
             return {
-                foldState: 'unfold'
+                foldState: 'unfold',
+                processInfo: {
+                    processName: '',
+                    describe: ''
+                }
+            }
+        },
+        watch: {
+            'processInfo.processName'(newVal) {
+                this.$emit('editProcessName', newVal)
             }
         },
         methods: {
