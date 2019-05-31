@@ -1,18 +1,20 @@
 'use strict'
+import Vue from "vue"
 import {getUUID, getInitBpmn} from "../common/util";
 
 getInitBpmn()
 setTimeout(getInitBpmn, 3000)
-const nodes = document.getElementsByClassName("b-node") // 获取的所有流程节点
-const headerNode = document.getElementById("headerNode") // 头部容器
-const toolBox = document.getElementById("toolBox")// 左边工具栏
-const center = document.getElementById("center")// 画布的wrapper
-const designArea = document.getElementById("designArea") // 流程设计画布
+let nodes = document.getElementsByClassName("b-node") // 获取的所有流程节点
+let headerNode = document.getElementById("headerNode") // 头部容器
+let toolBox = document.getElementById("toolBox")// 左边工具栏
+let center = document.getElementById("center")// 画布的wrapper
+let designArea = document.getElementById("designArea") // 流程设计画布
 let selectNode // 工具栏中被选中的节点
 let isInDesignArea = false // 是否放到流程画布中
 let toolBar // 点击画布中流程节点显示的工具栏
 /*-------------------------- 流程内的svg节点相关 --------------------------*/
 let svgNode
+let currentNodeInfo // 画布内被点击的SVG元素的信息
 let isMove = false // 判断svg元素是允许移动
 let isArrowDown = false // 判断箭头是否被按下
 let dottedLine // 箭头按下的虚线
@@ -20,22 +22,40 @@ let svgNodesInfo = [] // 画布上所有svg节点的信息数组
 let startNodeInfo = {} // 连线开始的svg节点的信息
 let endNodeInfo = {} // 连线结束的svg节点的信息
 let linesInfo = [] // 连接线信息集合
-for (let node of nodes) {
-    node.addEventListener('mousedown', function (e) {
-        e.preventDefault() // 阻止默认事件
-        selectNode = node.cloneNode(true)
-        selectNode.style.position = 'fixed'
-        selectNode.style.listStyle = 'none'
-        selectNode.style.border = '2px solid rgba(131, 208, 242, 1)'
-        selectNode.style.backgroundColor = 'rgba(131, 208, 242, 0.2)'
-        selectNode.style.borderRadius = '4px'
-        selectNode.style.padding = '4px 8px'
-        selectNode.style.left = e.clientX
-        selectNode.style.top = e.clientY
-        document.body.style.overflow = 'hidden'
-        document.body.appendChild(selectNode)
+
+function initNodes() {
+    nodes = document.getElementsByClassName("b-node") // 获取的所有流程节点
+    headerNode = document.getElementById("headerNode") // 头部容器
+    toolBox = document.getElementById("toolBox")// 左边工具栏
+    center = document.getElementById("center")// 画布的wrapper
+    designArea = document.getElementById("designArea") // 流程设计画布
+    document.body.addEventListener('mousemove', bodyMove)
+    document.body.addEventListener('mouseup', bodyMouseup, false)
+    designArea.addEventListener('mousemove', designAreaMove)
+    // 监听头部鼠标移进事件
+    headerNode.addEventListener('mouseover', function () {
+        if (svgNode) { // 防止从头部移除window窗口的监听范围
+            svgNode = null
+        }
     })
+    for (let node of nodes) {
+        node.addEventListener('mousedown', function (e) {
+            e.preventDefault() // 阻止默认事件
+            selectNode = node.cloneNode(true)
+            selectNode.style.position = 'fixed'
+            selectNode.style.listStyle = 'none'
+            selectNode.style.border = '2px solid rgba(131, 208, 242, 1)'
+            selectNode.style.backgroundColor = 'rgba(131, 208, 242, 0.2)'
+            selectNode.style.borderRadius = '4px'
+            selectNode.style.padding = '4px 8px'
+            selectNode.style.left = e.clientX
+            selectNode.style.top = e.clientY
+            document.body.style.overflow = 'hidden'
+            document.body.appendChild(selectNode)
+        })
+    }
 }
+
 // 用事件代理的方法代替多个绑定事件
 // toolBox.addEventListener('mousedown', function (e) {
 //     if (e.target.nodeName.toLowerCase() === 'li') {
@@ -84,11 +104,7 @@ var bodyMove = (function() {
         }
     }
 })()
-/**
- * @param e 为回调函数中的当前元素，移到哪里就是哪个元素
- * */
-document.body.addEventListener('mousemove', bodyMove)
-document.body.addEventListener('mouseup', bodyMouseup, false)
+
 
 /**
  * body内的鼠标弹起事件
@@ -103,7 +119,7 @@ function bodyMouseup(e) {
             const x = e.clientX - toolBox.offsetWidth
             const y = e.clientY - headerNode.offsetHeight
             const node = processNodeFactory(id, x, y)
-            const nodeInfoId = getUUID()
+            const nodeInfoId = id + "-" +getUUID()
             node.setAttribute("id", nodeInfoId)
             designArea.appendChild(node)
             svgNodesInfo.push(getSvgNodeInfo(node.getBBox(), nodeInfoId))
@@ -134,7 +150,6 @@ function bodyMouseup(e) {
             line.setAttribute("x2", endNodeInfo['left']['x'])
             line.setAttribute("y2", endNodeInfo['left']['y'])
             designArea.appendChild(line)
-            // debugger
             // let lineInfo = line.getBBox()
             linesInfo.push(line)
             startNodeInfo = {}
@@ -220,6 +235,9 @@ function svgDown(e) {
     isMove = true
     e.preventDefault() // 防止出现拖拽的图标
     svgNode = e.target
+    // currentNodeInfo = getCurrentNodeInfo(svgNode)
+    debugger
+    currentNodeInfo = e.target.id
 }
 /**
  * 鼠标在画布上移动
@@ -260,15 +278,7 @@ var designAreaMove = (function () {
         }
     }
 })()
-designArea.addEventListener('mousemove', designAreaMove)
-/**
- * 监听头部鼠标移进事件
- * */
-headerNode.addEventListener('mouseover', function () {
-    if (svgNode) { // 防止从头部移除window窗口的监听范围
-        svgNode = null
-    }
-})
+
 
 /**
  * 流程画布内，svg元素鼠标弹起事件
@@ -364,6 +374,15 @@ function getSvgNodeInfo(currentNodeBBox, nodeInfoId) {
     }
 }
 
+/**
+ * 获取当前节点的信息
+ * */
+function getCurrentNodeInfo(currentNode) {
+    const type = currentNode.id.split('-')[0]
+    const id = currentNode.id.split('-')[1]
+    return {id, type}
+}
+
 /*-------------------------- svg节点工具栏的操作 --------------------------*/
 /**
  * 工具栏的trash事件,从画布上移除当前svg节点，并删除引用
@@ -398,3 +417,12 @@ function arrowDownFn() {
     dottedLine.setAttribute("y1", nodeCenterY.toString())
 }
 
+// export {currentNodeInfo, svgNodesInfo, initNodes}
+// export default {currentNodeInfo, svgNodesInfo, initNodes}
+export default Vue.observable({
+    store: {
+        currentNodeInfo,
+        svgNodesInfo,
+        initNodes
+    }
+})
