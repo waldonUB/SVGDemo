@@ -235,9 +235,8 @@ function svgDown(e) {
     isMove = true
     e.preventDefault() // 防止出现拖拽的图标
     svgNode = e.target
-    // currentNodeInfo = getCurrentNodeInfo(svgNode)
-    debugger
-    currentNodeInfo = e.target.id
+    store.currentNodeInfo = getCurrentNodeInfo(svgNode)
+    // store.currentNodeInfo = e.target.id
 }
 /**
  * 鼠标在画布上移动
@@ -419,10 +418,8 @@ function arrowDownFn() {
 
 // export {currentNodeInfo, svgNodesInfo, initNodes}
 // export default {currentNodeInfo, svgNodesInfo, initNodes}
-export default Vue.observable({
-    store: {
-        currentNodeInfo,
-        svgNodesInfo,
-        initNodes
-    }
+export var store = Vue.observable({
+    currentNodeInfo,
+    svgNodesInfo,
+    initNodes
 })

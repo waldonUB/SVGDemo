@@ -126,9 +126,6 @@
             }
         },
         mounted() {
-            import('../js/design/flow.js').then(module => {
-
-            })
         }
     }
 </script>

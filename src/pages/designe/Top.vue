@@ -25,48 +25,39 @@
 
 <script>
     import PanelHeader from "components/PanelHeader"
-    // import {currentNodeInfo, svgNodesInfo, initNodes} from '../../js/design/flow.js'
-    import store from '../../js/design/flow.js'
-    import {getUUID, getInitBpmn} from "../../js/common/util"
+    import {store} from '../../js/design/flow.js'
     export default {
         name: "Top",
         components: {PanelHeader},
-        watch: {
-            'store.currentNodeInfo' (newVal) {
-                console.log(`watch currentNodeInfo : ` + newVal)
-            }
-        },
         computed: {
             testCount () {
-                console.log(`computed currentNodeInfo : ` + store.store.currentNodeInfo)
-                return store.store.currentNodeInfo
+                if (store.currentNodeInfo)
+                console.log(`computed currentNodeInfo : ` + store.currentNodeInfo.id)
+                // return store.currentNodeInfo.id
+                return 'store.currentNodeInfo.id'
+            }
+        },
+        watch: {
+            'module.currentNodeInfo.id' (newVal) {
+                console.log(`watch currentNodeInfo : ` + newVal)
             }
         },
         data() {
             return {
-                module: {
-                    currentNodeInfo: ''
-                }
+                module: null
             }
         },
         methods: {
             saveFlow() {
-                console.log(`saveFlow`)
-                // store.currentNodeInfo = getUUID()
-                debugger
-                this.$set(store, 'currentNodeInfo', store.currentNodeInfo)
+                console.log(this.module)
+                // this.$set(store, 'currentNodeInfo', store.currentNodeInfo)
                 // this.$set(this.module, 'currentNodeInfo', this.module.currentNodeInfo)
             }
         },
         mounted() {
-            store.store.initNodes()
-            // setInterval(function () {
-            //     console.log(store.store.currentNodeInfo)
-            // }, 300)
-            // import('../../js/design/flow.js').then(module => {
-            //     debugger
-            //     this.module = module.store
-            // })
+            // watch只能监听data中的数据？
+            this.module = store
+            store.initNodes()
         }
     }
 </script>
