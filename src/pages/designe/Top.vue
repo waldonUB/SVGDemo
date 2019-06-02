@@ -1,6 +1,5 @@
 <template>
     <div id="headerNode" class="header">
-        {{testCount}}
         <panel-header>
             <template v-slot:headName>
                 <i class="iconfont iconworkflow work-flow-icon"></i>
@@ -29,14 +28,14 @@
     export default {
         name: "Top",
         components: {PanelHeader},
-        computed: {
-            testCount () {
-                if (store.currentNodeInfo)
-                console.log(`computed currentNodeInfo : ` + store.currentNodeInfo.id)
-                // return store.currentNodeInfo.id
-                return 'store.currentNodeInfo.id'
-            }
-        },
+        // computed: {
+        //     testCount () {
+        //         if (store.currentNodeInfo)
+        //         console.log(`computed currentNodeInfo : ` + store.currentNodeInfo.id)
+        //         // return store.currentNodeInfo.id
+        //         return 'store.currentNodeInfo.id'
+        //     }
+        // },
         watch: {
             'module.currentNodeInfo.id' (newVal) {
                 console.log(`watch currentNodeInfo : ` + newVal)

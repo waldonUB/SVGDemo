@@ -1,3 +1,4 @@
+<!--属性面板的各个panel-->
 <template>
     <div class="container">
         <div class="panel-header">
@@ -6,7 +7,7 @@
         </div>
         <!--循环列表中DOM结构变化比较复杂，在子组件控制panelBody-->
         <div class="panel-body">
-            <div class="input-group" v-if="attrInfo.code === '001'">
+            <div class="input-group" v-if="attrInfo.code === '01'">
                 <div class="input-form">
                     <label for="processName">名称</label>
                     <input class="attr-input" id="processName" type="text" v-model="processInfo.processName">
@@ -28,8 +29,19 @@
             <div v-else-if="attrInfo.code === '005'">
                 005
             </div>
-            <div v-else>
-
+            <div class="input-group" v-if="attrInfo.code === '02'">
+                <div class="input-form">
+                    <label for="nodeId">ID</label>
+                    <input class="attr-input" id="nodeId" type="text" v-model="processInfo.processName">
+                </div>
+                <div class="input-form">
+                    <label for="nodeName">名称</label>
+                    <input class="attr-input" id="nodeName" type="text" v-model="processInfo.processName">
+                </div>
+                <div class="input-form">
+                    <label for="nodeDescribe">描述</label>
+                    <input class="attr-input" id="nodeDescribe" type="text" v-model="processInfo.describe">
+                </div>
             </div>
         </div>
     </div>

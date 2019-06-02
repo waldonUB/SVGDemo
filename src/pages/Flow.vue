@@ -104,7 +104,7 @@
 </template>
 
 <script>
-    // import '../js/design/flow.js'
+    import {store} from '../js/design/flow.js'
     import Top from "pages/designe/Top"
     import AttrConfig from "pages/designe/AttrConfig"
     import PanelHeader from "components/PanelHeader"
@@ -112,12 +112,15 @@
     export default {
         name: "Flow",
         components: {Top, AttrConfig, PanelHeader, AttrConfigPanel},
+        watch: {
+            'module.currentNodeInfo.id' (newVal) {
+                console.log(`flow watch currentNodeInfo : ` + newVal)
+                // console.log(`flow watch currentNodeInfo : ` + attrList)
+            }
+        },
         data() {
             return {
-                processInfo: {
-                    processName: '',
-                    describe: ''
-                }
+                module: null
             }
         },
         methods: {
@@ -126,6 +129,7 @@
             }
         },
         mounted() {
+            this.module = store
         }
     }
 </script>
