@@ -7,7 +7,7 @@
             </template>
         </panel-header>
         <div class="attr-content">
-            <slot :attrList="attrList"></slot>
+            <slot :attrList="currentAttrList"></slot>
         </div>
     </div>
 </template>
@@ -15,9 +15,21 @@
 <script>
     import PanelHeader from "@components/PanelHeader"
     import AttrConfigPanel from "@components/AttrConfigPanel"
+
+    // 当前画布选择流程或节点的状态
+    const PROCESS = '01'
+    const NODE = '02'
+
     export default {
         name: "AttrConfig",
         components: {PanelHeader, AttrConfigPanel},
+        computed: {
+            currentAttrList () {
+                let typeCode = this.$store.state.currentNodeInfo.type === 'process' ? PROCESS : NODE
+                console.log(`当前过滤的attrList:` + JSON.stringify(this.attrList.filter(item => item.code.startsWith(typeCode))))
+                return this.attrList.filter(item => item.code.startsWith(typeCode))
+            }
+        },
         data() {
             return {
                 // 针对流程面板和流程节点渲染出不同的属性，未来再扩展流程插件配置

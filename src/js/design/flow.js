@@ -13,6 +13,7 @@ let selectNode // 工具栏中被选中的节点
 let isInDesignArea = false // 是否放到流程画布中
 let toolBar // 点击画布中流程节点显示的工具栏
 /*-------------------------- 流程内的svg节点相关 --------------------------*/
+let processInfo // 设置当前流程信息
 let svgNode
 let isMove = false // 判断svg元素是允许移动
 let isArrowDown = false // 判断箭头是否被按下
@@ -52,6 +53,10 @@ function initNodes() {
             document.body.style.overflow = 'hidden'
             document.body.appendChild(selectNode)
         })
+    }
+    processInfo = {
+        id: getUUID(),
+        type: 'process'
     }
 }
 
@@ -110,9 +115,9 @@ var bodyMove = (function() {
  * */
 function bodyMouseup(e) {
     // 从左边工具栏拖拽进画布
+    getOffsetXY(e)
     if (selectNode) {
         document.body.removeChild(selectNode)
-        getOffsetXY(e)
         if (isInDesignArea) {
             const id = selectNode.id
             const x = e.clientX - toolBox.offsetWidth
@@ -135,6 +140,11 @@ function bodyMouseup(e) {
     // 弹起位置不在svg元素和工具栏内时，清除工具栏
     if (toolBar && toolBar.parentNode && !isInLi && !isInSvg) {
         toolBar.parentNode.removeChild(toolBar)
+    }
+    // 弹起位置在画布中并且不再SVG元素和工具栏内，属性栏信息变回当前流程
+    if (isInDesignArea && !isInLi && !isInSvg) {
+        // 设置当前流程信息
+        store.commit('changeCurrent', processInfo)
     }
     // 箭头连线按钮是否被按下
     if (isArrowDown) {
@@ -234,11 +244,8 @@ function svgDown(e) {
     isMove = true
     e.preventDefault() // 防止出现拖拽的图标
     svgNode = e.target
-    // store.state.currentNodeInfo = getCurrentNodeInfo(svgNode) 可以改变，并且在组件内监听到，但是vuex无法追踪这种变化
     store.commit('changeCurrent', getCurrentNodeInfo(svgNode))
-    // store.dispatch('changeCurrent', getCurrentNodeInfo(svgNode)).then(res => {
-    //     console.log(res)
-    // })
+    // store.state.currentNodeInfo = getCurrentNodeInfo(svgNode) 可以改变，并且在组件内监听到，但是vuex无法追踪这种变化
 }
 /**
  * 鼠标在画布上移动

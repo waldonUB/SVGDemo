@@ -6,7 +6,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     // strict: process.env.NODE_ENV !== 'production',
     state: {
-        currentNodeInfo: null,
+        currentNodeInfo: {
+            id: '',
+            type: ''
+        },
         svgNodesInfo: null
     },
     mutations: {

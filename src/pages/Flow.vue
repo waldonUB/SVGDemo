@@ -81,12 +81,17 @@
                     <attr-config-panel
                             v-for="item of attrList"
                             :key="item.code"
-                            :attrInfo="item" @editProcessName="updateProcessName">
+                            :attrInfo="item"
+                            @editProcessName="updateProcessName"
+                            @editNodeName="updateNodeName">
                         <!--属性配置中各个属性标题-->
                         <template #attrName>
                             {{item.name}}
-                            <span v-if="item.code === '001'">
+                            <span v-if="item.code === '01'">
                                 {{processInfo.processName}}
+                            </span>
+                            <span v-if="item.code === '02'">
+                                {{nodeInfo.nodeName}}
                             </span>
                         </template>
                     </attr-config-panel>
@@ -108,6 +113,7 @@
     import AttrConfig from "@pages/designe/AttrConfig"
     import PanelHeader from "@components/PanelHeader"
     import AttrConfigPanel from "@components/AttrConfigPanel"
+
     export default {
         name: "Flow",
         components: {Top, AttrConfig, PanelHeader, AttrConfigPanel},
@@ -118,16 +124,19 @@
         },
         data() {
             return {
-                module: null
+                processInfo: {},
+                nodeInfo: {}
             }
         },
         methods: {
-            updateProcessName(data) {
+            updateProcessName (data) {
                 this.processInfo.processName = data
+            },
+            updateNodeName (data) {
+                this.nodeInfo.nodeName = data
             }
         },
         mounted() {
-            console.log(`flow mounted $vuex:` + this.$store.state.currentNodeInfo)
         }
     }
 </script>
