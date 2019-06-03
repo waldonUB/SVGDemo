@@ -22,10 +22,11 @@ module.exports = {
         alias: {
             'vue$': 'vue/dist/vue.esm.js', // 用 webpack 1 时需用 'vue/dist/vue.common.js'
             '@': resolve('src'),
-            'pages': resolve('src/pages'),
-            'components': resolve('src/components'),
-            'test': resolve('test'),
-            'css': resolve('src/css')
+            '@pages': resolve('src/pages'),
+            '@components': resolve('src/components'),
+            '@test': resolve('test'),
+            '@css': resolve('src/css'),
+            '@js': resolve('src/js'),
         }
     },
     module: {

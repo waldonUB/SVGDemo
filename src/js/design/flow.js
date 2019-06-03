@@ -1,6 +1,6 @@
 'use strict'
-import Vue from "vue"
 import {getUUID, getInitBpmn} from "../common/util";
+import store from "../../store/index"
 
 getInitBpmn()
 setTimeout(getInitBpmn, 3000)
@@ -14,7 +14,6 @@ let isInDesignArea = false // 是否放到流程画布中
 let toolBar // 点击画布中流程节点显示的工具栏
 /*-------------------------- 流程内的svg节点相关 --------------------------*/
 let svgNode
-let currentNodeInfo // 画布内被点击的SVG元素的信息
 let isMove = false // 判断svg元素是允许移动
 let isArrowDown = false // 判断箭头是否被按下
 let dottedLine // 箭头按下的虚线
@@ -235,8 +234,11 @@ function svgDown(e) {
     isMove = true
     e.preventDefault() // 防止出现拖拽的图标
     svgNode = e.target
-    store.currentNodeInfo = getCurrentNodeInfo(svgNode)
-    // store.currentNodeInfo = e.target.id
+    // store.state.currentNodeInfo = getCurrentNodeInfo(svgNode) 可以改变，并且在组件内监听到，但是vuex无法追踪这种变化
+    store.commit('changeCurrent', getCurrentNodeInfo(svgNode))
+    // store.dispatch('changeCurrent', getCurrentNodeInfo(svgNode)).then(res => {
+    //     console.log(res)
+    // })
 }
 /**
  * 鼠标在画布上移动
@@ -416,10 +418,4 @@ function arrowDownFn() {
     dottedLine.setAttribute("y1", nodeCenterY.toString())
 }
 
-// export {currentNodeInfo, svgNodesInfo, initNodes}
-// export default {currentNodeInfo, svgNodesInfo, initNodes}
-export var store = Vue.observable({
-    currentNodeInfo,
-    svgNodesInfo,
-    initNodes
-})
+export default {initNodes}

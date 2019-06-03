@@ -104,18 +104,16 @@
 </template>
 
 <script>
-    import {store} from '../js/design/flow.js'
-    import Top from "pages/designe/Top"
-    import AttrConfig from "pages/designe/AttrConfig"
-    import PanelHeader from "components/PanelHeader"
-    import AttrConfigPanel from "components/AttrConfigPanel"
+    import Top from "@pages/designe/Top"
+    import AttrConfig from "@pages/designe/AttrConfig"
+    import PanelHeader from "@components/PanelHeader"
+    import AttrConfigPanel from "@components/AttrConfigPanel"
     export default {
         name: "Flow",
         components: {Top, AttrConfig, PanelHeader, AttrConfigPanel},
         watch: {
-            'module.currentNodeInfo.id' (newVal) {
+            '$store.state.currentNodeInfo.id' (newVal) {
                 console.log(`flow watch currentNodeInfo : ` + newVal)
-                // console.log(`flow watch currentNodeInfo : ` + attrList)
             }
         },
         data() {
@@ -129,7 +127,7 @@
             }
         },
         mounted() {
-            this.module = store
+            console.log(`flow mounted $vuex:` + this.$store.state.currentNodeInfo)
         }
     }
 </script>

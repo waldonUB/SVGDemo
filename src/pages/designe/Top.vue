@@ -23,19 +23,10 @@
 </template>
 
 <script>
-    import PanelHeader from "components/PanelHeader"
-    import {store} from '../../js/design/flow.js'
+    import PanelHeader from "@components/PanelHeader"
     export default {
         name: "Top",
         components: {PanelHeader},
-        // computed: {
-        //     testCount () {
-        //         if (store.currentNodeInfo)
-        //         console.log(`computed currentNodeInfo : ` + store.currentNodeInfo.id)
-        //         // return store.currentNodeInfo.id
-        //         return 'store.currentNodeInfo.id'
-        //     }
-        // },
         watch: {
             'module.currentNodeInfo.id' (newVal) {
                 console.log(`watch currentNodeInfo : ` + newVal)
@@ -48,15 +39,10 @@
         },
         methods: {
             saveFlow() {
-                console.log(this.module)
-                // this.$set(store, 'currentNodeInfo', store.currentNodeInfo)
-                // this.$set(this.module, 'currentNodeInfo', this.module.currentNodeInfo)
+                this.$store.commit('changeCurrent', Math.random() * 10000)
             }
         },
         mounted() {
-            // watch只能监听data中的数据？
-            this.module = store
-            store.initNodes()
         }
     }
 </script>

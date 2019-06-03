@@ -13,8 +13,8 @@
 </template>
 
 <script>
-    import PanelHeader from "components/PanelHeader"
-    import AttrConfigPanel from "components/AttrConfigPanel"
+    import PanelHeader from "@components/PanelHeader"
+    import AttrConfigPanel from "@components/AttrConfigPanel"
     export default {
         name: "AttrConfig",
         components: {PanelHeader, AttrConfigPanel},
