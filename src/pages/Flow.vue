@@ -76,26 +76,6 @@
                 </svg>
             </div>
             <attr-config>
-                <!--作用域插槽控制对不同节点属性配置的渲染-->
-                <template v-slot="{attrList}">
-                    <attr-config-panel
-                            v-for="item of attrList"
-                            :key="item.code"
-                            :attrInfo="item"
-                            @editProcessName="updateProcessName"
-                            @editNodeName="updateNodeName">
-                        <!--属性配置中各个属性标题-->
-                        <template #attrName>
-                            {{item.name}}
-                            <span v-if="item.code === '01'">
-                                {{processInfo.processName}}
-                            </span>
-                            <span v-if="item.code === '02'">
-                                {{nodeInfo.nodeName}}
-                            </span>
-                        </template>
-                    </attr-config-panel>
-                </template>
             </attr-config>
         </div>
         <div class="footer">

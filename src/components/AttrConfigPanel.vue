@@ -1,3 +1,4 @@
+<!--暂时废弃-->
 <!--属性面板的各个panel-->
 <template>
     <div class="container">

@@ -58,6 +58,7 @@ function initNodes() {
         id: getUUID(),
         type: 'process'
     }
+    store.commit('changeCurrent', processInfo)
 }
 
 // 用事件代理的方法代替多个绑定事件

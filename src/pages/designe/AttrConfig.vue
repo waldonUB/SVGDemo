@@ -7,7 +7,12 @@
             </template>
         </panel-header>
         <div class="attr-content">
-            <slot :attrList="currentAttrList"></slot>
+            <keep-alive>
+                <component :is="currentTemp"
+                           :key="$store.state.currentNodeInfo.id"
+                           :nodeType="$store.state.currentNodeInfo.type">
+                </component>
+            </keep-alive>
         </div>
     </div>
 </template>
@@ -15,6 +20,8 @@
 <script>
     import PanelHeader from "@components/PanelHeader"
     import AttrConfigPanel from "@components/AttrConfigPanel"
+    import ProcessPanel from "@pages/designe/attrConfigPanel/ProcessPanel"
+    import NodePanel from "@pages/designe/attrConfigPanel/NodePanel"
 
     // 当前画布选择流程或节点的状态
     const PROCESS = '01'
@@ -22,13 +29,23 @@
 
     export default {
         name: "AttrConfig",
-        components: {PanelHeader, AttrConfigPanel},
+        components: {PanelHeader, AttrConfigPanel, ProcessPanel, NodePanel},
         computed: {
             currentAttrList () {
                 let typeCode = this.$store.state.currentNodeInfo.type === 'process' ? PROCESS : NODE
                 console.log(`当前过滤的attrList:` + JSON.stringify(this.attrList.filter(item => item.code.startsWith(typeCode))))
                 return this.attrList.filter(item => item.code.startsWith(typeCode))
+            },
+            currentTemp() {
+                let type = this.$store.state.currentNodeInfo.type
+                if (type) {
+                    let typeName = type === 'process' ? 'process' : 'node'
+                    return typeName + '-panel'
+                }
             }
+        },
+        props: {
+
         },
         data() {
             return {
