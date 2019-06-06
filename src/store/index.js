@@ -10,11 +10,29 @@ export default new Vuex.Store({
             id: '',
             type: ''
         },
-        svgNodesInfo: null
+        svgNodesInfo: null,
+        // 统计画布中各个类型svg节点的信息
+        nodeTypes: {
+            startEvent: {
+                type: 'startEvent',
+                count: 0
+            },
+            endEvent: {
+                type: 'endEvent',
+                count: 0
+            },
+            userTask: {
+                type: 'userTask',
+                count: 0
+            }
+        }
     },
     mutations: {
         changeCurrent(state, currentNodeInfo) {
             state.currentNodeInfo = currentNodeInfo
+        },
+        nodeIncrease(state, type) {
+            state.nodeTypes[type].count++
         }
     },
     actions: {

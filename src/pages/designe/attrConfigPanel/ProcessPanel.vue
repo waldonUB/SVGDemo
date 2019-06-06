@@ -57,7 +57,7 @@
             }
         },
         deactivated() {
-            // 看看是不是要销毁这个组件，如果init的话
+
         }
     }
 </script>

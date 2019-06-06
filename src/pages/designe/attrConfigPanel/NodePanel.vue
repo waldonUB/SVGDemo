@@ -78,7 +78,11 @@
             }
         },
         activated() {
-            console.log(`我进了activated：` + this.nodeType)
+        },
+        mounted() {
+            let type = this.$store.state.currentNodeInfo.type
+            this.$store.commit('nodeIncrease', type)
+            this.nodeInfo.nodeId = type + this.$store.state.nodeTypes[type].count
         }
     }
 </script>
