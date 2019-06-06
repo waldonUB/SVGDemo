@@ -48,6 +48,7 @@
 </script>
 
 <style lang="scss" scoped>
+    @import "../../css/base";
     .header {
         position: relative;
         flex: 1 1 0;
@@ -61,10 +62,10 @@
         padding: 10px 0 0 20px;
         /*头部功能图标*/
         .icon-header {
-            width: 36px;
-            height: 55%;
+            width: pxToRem(36px);
+            height: pxToRem(26px);
             list-style: none;
-            font-size: 26px;
+            font-size: pxToRem(26px);
             background-color: rgba(132, 198, 232, 0.7);
             color: white;
             border-radius: 5px;
@@ -72,6 +73,13 @@
             margin: 0 10px;
             cursor: pointer;
             text-align: center;
+        }
+        @media screen and (max-width: 1360px){
+            .icon-header {
+                width: pxToRem(30px);
+                height: pxToRem(19px);
+                font-size: pxToRem(22px);
+            }
         }
     }
     /**workflow图标*/

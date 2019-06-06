@@ -1,19 +1,33 @@
+$browser-default-font-size: 16px !default;
+html {
+  font-size: $browser-default-font-size;
+}
+@media screen and (max-width: 1360px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+@function pxToRem($px) {
+  @return $px / $browser-default-font-size * 1rem;
+}
+
 @mixin panel-radius {
-  -webkit-border-radius: 5px 5px 0 0;
-  -moz-border-radius: 5px 5px 0 0;
-  border-radius: 5px 5px 0 0;
+  -webkit-border-radius: pxToRem(5px) pxToRem(5px) 0 0;
+  -moz-border-radius: pxToRem(5px) pxToRem(5px) 0 0;
+  border-radius: pxToRem(5px) pxToRem(5px) 0 0;
 }
 
 @mixin attr-panel-header {
   @include panel-radius;
   width: 100%;
-  height: 30px;
+  height: pxToRem(30px);
   position: relative;
-  line-height: 30px;
+  line-height: pxToRem(30px);
   box-sizing: border-box;
-  padding-left: 15px;
+  padding-left: pxToRem(15px);
   color: rgb(50, 99, 147);
-  font-size: 14px;
+  font-size: pxToRem(14px);
   font-weight: bolder;
   background: linear-gradient(45deg ,rgba(209, 222, 239, 0.8), rgba(209, 222, 239, 0.2));
 }
@@ -30,21 +44,21 @@
 }
 
 input {
-  width: 220px;
-  height: 30px;
+  width: pxToRem(220px);
+  height: pxToRem(30px);
   box-sizing: border-box;
-  border: 1px solid rgb(193, 193, 193);
-  padding: 0 0 0 10px;
+  border: pxToRem(1px) solid rgb(193, 193, 193);
+  padding: 0 0 0 pxToRem(10px);
 }
 
 @mixin attr-input {
   @extend input;
-  border-radius: 4px;
+  border-radius: pxToRem(4px);
 }
 
 .btn {
-  border-radius: 4px;
-  padding: 4px 6px;
+  border-radius: pxToRem(4px);
+  padding: pxToRem(4px) pxToRem(6px);
   cursor: pointer;
   font-weight: bold;
 }
@@ -52,11 +66,11 @@ input {
   @extend .btn;
   color: rgb(70, 94, 105);
   background-color: rgba(240, 249, 235, 0.5);
-  border: 1px solid rgb(103, 194, 58);
+  border: pxToRem(1px) solid rgb(103, 194, 58);
 }
 .info {
   @extend .btn;
   color: rgb(70, 94, 105);
   background-color: rgba(179, 216, 255, 0.5);
-  border: 1px solid rgb(179, 216, 255);
+  border: pxToRem(1px) solid rgb(179, 216, 255);
 }
