@@ -22,11 +22,9 @@ const getInitBpmn = (function () {
             xhr.send()
             xhr.onload = function (res) {
                 initXML = convert.xml2json(res.target.responseText, {compact: false, spaces: 4});
-                return initXML
             }
-        } else {
-            return initXML
         }
+        return initXML
     }
 }())
 

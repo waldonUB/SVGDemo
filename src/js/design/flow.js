@@ -2,8 +2,6 @@
 import {getUUID, getInitBpmn} from "../common/util";
 import store from "../../store/index"
 
-getInitBpmn()
-setTimeout(getInitBpmn, 3000)
 let nodes = document.getElementsByClassName("b-node") // 获取的所有流程节点
 let headerNode = document.getElementById("headerNode") // 头部容器
 let toolBox = document.getElementById("toolBox")// 左边工具栏
@@ -59,6 +57,8 @@ function initNodes() {
         type: 'process'
     }
     store.commit('changeCurrent', processInfo)
+    // 初始化单例中的异步返回
+    getInitBpmn()
 }
 
 // 用事件代理的方法代替多个绑定事件

@@ -24,6 +24,7 @@
 
 <script>
     import PanelHeader from "@components/PanelHeader"
+    import {getInitBpmn} from "../../js/common/util";
     export default {
         name: "Top",
         components: {PanelHeader},
@@ -39,7 +40,8 @@
         },
         methods: {
             saveFlow() {
-                this.$store.commit('changeCurrent', Math.random() * 10000)
+                let initBpmn = getInitBpmn()
+                console.log(initBpmn)
             }
         },
         mounted() {
