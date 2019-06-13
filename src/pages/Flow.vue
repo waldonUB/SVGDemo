@@ -61,6 +61,9 @@
                         流程图设计
                     </template>
                 </panel-header>
+                <!--两个节点相交的时候出现的XY轴-->
+                <p id="collideLineX"></p>
+                <p id="collideLineY"></p>
                 <svg id="designArea">
                     <defs>
                         <marker id="myArrow" viewBox="0 0 20 1" refX="20" refY="0" markerWidth="20" markerHeight="20" orient="auto">
@@ -98,7 +101,7 @@
         components: {Top, AttrConfig, PanelHeader},
         watch: {
             '$store.state.currentNodeInfo.id' (newVal) {
-                console.log(`flow watch currentNodeInfo : ` + newVal)
+                // console.log(`flow watch currentNodeInfo : ` + newVal)
             }
         },
         data() {

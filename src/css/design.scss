@@ -43,6 +43,26 @@
     border-right: 1px solid rgba(169, 161, 181, 0.5);
     flex: 6 1 0;
     background-color: rgba(215, 239, 255, 0.1);
+    & > #collideLineX {
+      width: 100%;
+      height: 0;
+      position: absolute;
+      border: 1px solid rgba(104, 135, 185, 0.4);
+      top: 50%;
+      left: 0;
+      z-index: -1;
+      display: none;
+    }
+    & > #collideLineY {
+      width: 0;
+      height: 95%;
+      position: absolute;
+      border: 1px solid rgba(104, 135, 185, 0.4);
+      top: 5%;
+      left: 50%;
+      z-index: -1;
+      display: none;
+    }
     & > #designArea {
       width: 100%;
       height: 100%;

@@ -2,11 +2,18 @@
 import {getUUID, getInitBpmn} from "../common/util";
 import store from "../../store/index"
 
-let nodes = document.getElementsByClassName("b-node") // 获取的所有流程节点
-let headerNode = document.getElementById("headerNode") // 头部容器
-let toolBox = document.getElementById("toolBox")// 左边工具栏
-let center = document.getElementById("center")// 画布的wrapper
-let designArea = document.getElementById("designArea") // 流程设计画布
+let nodes // 获取的所有流程节点
+let headerNode // 头部容器
+let toolBox // 左边工具栏
+let center // 画布的wrapper
+let designArea // 流程设计画布
+let collideLineX // SVG节点相交的X轴的线
+let collideLineY // SVG节点相交的Y轴的线
+let collideNodeX // SVG中在X轴相交的节点
+let collideNodeY // SVG中在Y轴相交的节点
+let D_VALUE = 10 // 相交允许的差值
+let currentX // 鼠标当前在画布内的横坐标
+let currentY // 鼠标当前在画布内的横坐标
 let selectNode // 工具栏中被选中的节点
 let isInDesignArea = false // 是否放到流程画布中
 let toolBar // 点击画布中流程节点显示的工具栏
@@ -27,6 +34,8 @@ function initNodes() {
     toolBox = document.getElementById("toolBox")// 左边工具栏
     center = document.getElementById("center")// 画布的wrapper
     designArea = document.getElementById("designArea") // 流程设计画布
+    collideLineX = document.getElementById("collideLineX") // SVG节点相交的X轴的线
+    collideLineY = document.getElementById("collideLineY") // SVG节点相交的Y轴的线
     document.body.addEventListener('mousemove', bodyMove)
     document.body.addEventListener('mouseup', bodyMouseup, false)
     designArea.addEventListener('mousemove', designAreaMove)
@@ -171,6 +180,21 @@ function bodyMouseup(e) {
         }
         isArrowDown = false
     }
+    // 这里断言还要想想？设置无效，明天再看看
+    if (!isArrowDown && isInSvg) {
+        collideLineX.style.display = 'none'
+        collideLineY.style.display = 'none'
+        debugger
+        console.log(`collideNodeX:` + collideNodeX)
+        if (collideNodeX) {
+            // 设置节点的纵坐标值
+            setSvgNodePosition(currentX, collideNodeX.left.y)
+        }
+        if (collideNodeY) {
+            // 设置节点的横坐标值
+            setSvgNodePosition(collideNodeY.left.x, currentY)
+        }
+    }
 }
 /**
  * 根据传入的流程id和坐标创建对应svg实例
@@ -257,20 +281,11 @@ var designAreaMove = (function () {
         if (svgNode && flag) { // 避免定义不必要的定时器
             flag = false
             setTimeout(function () { // 节流用的
-                const currentX = e.clientX - toolBox.offsetWidth
-                const currentY = e.clientY - headerNode.offsetHeight
+                currentX = e.clientX - toolBox.offsetWidth
+                currentY = e.clientY - headerNode.offsetHeight
                 if (svgNode && isMove) {
-                    let nodeInfo = svgNode.getBBox()
-                    switch (svgNode.nodeName) {
-                        case 'circle':
-                            svgNode.setAttribute("cx", currentX)
-                            svgNode.setAttribute("cy", currentY)
-                            break;
-                        case 'rect':
-                            svgNode.setAttribute("x", (currentX - nodeInfo.width / 2))
-                            svgNode.setAttribute("y", (currentY - nodeInfo.height / 2))
-                            break;
-                    }
+                    collideComputed()
+                    setSvgNodePosition()
                     const currentNodeId = svgNode.getAttribute("id")
                     const currentSvgNodeInfo = getSvgNodeInfo(svgNode.getBBox(), currentNodeId)
                     svgNodesInfo = svgNodesInfo.filter(item => item.id !== currentNodeId)
@@ -288,6 +303,52 @@ var designAreaMove = (function () {
     }
 })()
 
+/**
+ * 画布内节点相交线操作
+ * */
+function collideComputed() {
+    // 画布中除去自身的svg节点，用来做相交计算
+    let otherSvgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
+    collideNodeY = otherSvgNodesInfo.find(item => {
+        if (Math.abs(item.center.x - currentX) < D_VALUE) {
+            return true
+        }
+    })
+    if (collideNodeY) {
+        collideLineY.style.left = collideNodeY.center.x + 'px'
+        collideLineY.style.display = 'block'
+    } else {
+        collideLineY.style.display = 'none'
+    }
+    collideNodeX = otherSvgNodesInfo.find(item => {
+        if (Math.abs(item.center.y - currentY) < D_VALUE) {
+            return true
+        }
+    })
+    if (collideNodeX) {
+        collideLineX.style.top = collideNodeX.center.y + 'px'
+        collideLineX.style.display = 'block'
+    } else {
+        collideLineX.style.display = 'none'
+    }
+}
+
+/**
+ * 在移动或弹起时，设置流程节点位置
+ * */
+function setSvgNodePosition() {
+    let nodeInfo = svgNode.getBBox()
+    switch (svgNode.nodeName) {
+        case 'circle':
+            svgNode.setAttribute("cx", currentX)
+            svgNode.setAttribute("cy", currentY)
+            break;
+        case 'rect':
+            svgNode.setAttribute("x", (currentX - nodeInfo.width / 2))
+            svgNode.setAttribute("y", (currentY - nodeInfo.height / 2))
+            break;
+    }
+}
 
 /**
  * 流程画布内，svg元素鼠标弹起事件
