@@ -19,7 +19,6 @@
 
 <script>
     import PanelHeader from "@components/PanelHeader"
-    import AttrConfigPanel from "@components/AttrConfigPanel"
     import ProcessPanel from "@pages/designe/attrConfigPanel/ProcessPanel"
     import NodePanel from "@pages/designe/attrConfigPanel/NodePanel"
 
@@ -29,7 +28,7 @@
 
     export default {
         name: "AttrConfig",
-        components: {PanelHeader, AttrConfigPanel, ProcessPanel, NodePanel},
+        components: {PanelHeader, ProcessPanel, NodePanel},
         computed: {
             currentTemp() {
                 let type = this.$store.state.currentNodeInfo.type

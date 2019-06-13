@@ -92,11 +92,10 @@
     import Top from "@pages/designe/Top"
     import AttrConfig from "@pages/designe/AttrConfig"
     import PanelHeader from "@components/PanelHeader"
-    import AttrConfigPanel from "@components/AttrConfigPanel"
 
     export default {
         name: "Flow",
-        components: {Top, AttrConfig, PanelHeader, AttrConfigPanel},
+        components: {Top, AttrConfig, PanelHeader},
         watch: {
             '$store.state.currentNodeInfo.id' (newVal) {
                 console.log(`flow watch currentNodeInfo : ` + newVal)

@@ -89,7 +89,7 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "../css/base.scss";
+    @import "../../src/css/base";
     .panel-header{
         @include attr-panel-header;
         .icon-panel-header{

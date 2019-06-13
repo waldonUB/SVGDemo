@@ -40,8 +40,15 @@
         },
         methods: {
             saveFlow() {
-                let initBpmn = getInitBpmn()
-                console.log(initBpmn)
+                let initBpmn = getInitBpmn() // 获取初始化的BPMN文件
+                let bpmMap = JSON.parse(initBpmn)
+                let [process, diagram] = bpmMap.elements[0].elements // 将节点事件和图形坐标界面分离
+                let nodesEvent = process.elements // 获取所有节点事件
+                nodesEvent.push('123')
+                nodesEvent.push('456')
+                console.log(bpmMap)
+                console.log(process)
+                console.log(diagram)
             }
         },
         mounted() {
