@@ -184,15 +184,17 @@ function bodyMouseup(e) {
     if (!isArrowDown && isInSvg) {
         collideLineX.style.display = 'none'
         collideLineY.style.display = 'none'
-        debugger
-        console.log(`collideNodeX:` + collideNodeX)
         if (collideNodeX) {
+            // 弹起时，再去除一次自身的值
+            svgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
             // 设置节点的纵坐标值
-            setSvgNodePosition(currentX, collideNodeX.left.y)
+            setSvgNodePosition(currentX, collideNodeX.center.y)
         }
         if (collideNodeY) {
+            // 弹起时，再去除一次自身的值
+            svgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
             // 设置节点的横坐标值
-            setSvgNodePosition(collideNodeY.left.x, currentY)
+            setSvgNodePosition(collideNodeY.center.x, currentY)
         }
     }
 }
@@ -286,10 +288,6 @@ var designAreaMove = (function () {
                 if (svgNode && isMove) {
                     collideComputed()
                     setSvgNodePosition()
-                    const currentNodeId = svgNode.getAttribute("id")
-                    const currentSvgNodeInfo = getSvgNodeInfo(svgNode.getBBox(), currentNodeId)
-                    svgNodesInfo = svgNodesInfo.filter(item => item.id !== currentNodeId)
-                    svgNodesInfo.push(currentSvgNodeInfo)
                 } else if (svgNode && isArrowDown) {
                     dottedLine.setAttribute("x2", currentX)
                     dottedLine.setAttribute("y2", currentY)
@@ -308,8 +306,9 @@ var designAreaMove = (function () {
  * */
 function collideComputed() {
     // 画布中除去自身的svg节点，用来做相交计算
-    let otherSvgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
-    collideNodeY = otherSvgNodesInfo.find(item => {
+    // let otherSvgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
+    svgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
+    collideNodeY = svgNodesInfo.find(item => {
         if (Math.abs(item.center.x - currentX) < D_VALUE) {
             return true
         }
@@ -320,7 +319,7 @@ function collideComputed() {
     } else {
         collideLineY.style.display = 'none'
     }
-    collideNodeX = otherSvgNodesInfo.find(item => {
+    collideNodeX = svgNodesInfo.find(item => {
         if (Math.abs(item.center.y - currentY) < D_VALUE) {
             return true
         }
@@ -336,7 +335,9 @@ function collideComputed() {
 /**
  * 在移动或弹起时，设置流程节点位置
  * */
-function setSvgNodePosition() {
+function setSvgNodePosition(x, y) {
+    currentX = x || currentX
+    currentY = y || currentY
     let nodeInfo = svgNode.getBBox()
     switch (svgNode.nodeName) {
         case 'circle':
@@ -348,6 +349,10 @@ function setSvgNodePosition() {
             svgNode.setAttribute("y", (currentY - nodeInfo.height / 2))
             break;
     }
+    // const currentNodeId = svgNode.getAttribute("id")
+    const currentSvgNodeInfo = getSvgNodeInfo(svgNode.getBBox(), svgNode.id)
+    svgNodesInfo.push(currentSvgNodeInfo)
+    console.log(svgNodesInfo)
 }
 
 /**
