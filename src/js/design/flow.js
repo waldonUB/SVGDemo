@@ -180,7 +180,6 @@ function bodyMouseup(e) {
         }
         isArrowDown = false
     }
-    // 这里断言还要想想？设置无效，明天再看看
     if (!isArrowDown && isInSvg) {
         collideLineX.style.display = 'none'
         collideLineY.style.display = 'none'
