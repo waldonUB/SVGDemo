@@ -18,6 +18,7 @@
             <li class="iconfont icondown-circle icon-header"></li>
             <li class="iconfont iconleft-circle icon-header"></li>
             <li class="iconfont iconright-circle icon-header"></li>
+            <li class="iconfont iconlinegraph icon-header"></li>
         </ul>
     </div>
 </template>
