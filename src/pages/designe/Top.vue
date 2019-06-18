@@ -7,7 +7,7 @@
             </template>
         </panel-header>
         <ul>
-            <li class="iconfont iconsave icon-header" @click="saveFlow"></li>
+            <li class="iconfont iconsave icon-header" @click="saveFlow" v-tip="tips.save"></li>
             <li class="iconfont iconcopy icon-header"></li>
             <li class="iconfont iconcut icon-header"></li>
             <li class="iconfont iconshrink1 icon-header"></li>
@@ -18,7 +18,7 @@
             <li class="iconfont icondown-circle icon-header"></li>
             <li class="iconfont iconleft-circle icon-header"></li>
             <li class="iconfont iconright-circle icon-header"></li>
-            <li class="iconfont iconlinegraph icon-header"></li>
+            <li class="iconfont iconlinegraph icon-header" v-tip="tips.lineGraph"></li>
         </ul>
     </div>
 </template>
@@ -36,7 +36,11 @@
         },
         data() {
             return {
-                module: null
+                module: null,
+                tips: {
+                    save: '保存流程',
+                    lineGraph: '添加折点'
+                }
             }
         },
         methods: {

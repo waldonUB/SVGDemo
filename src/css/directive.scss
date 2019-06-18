@@ -1,0 +1,18 @@
+// 提示指令
+.tip {
+  //position: relative; // 这个直接获取吧
+  &:hover {
+    &::after {
+      content: attr(data-tip);
+      position: absolute;
+      padding: 8px 10px;
+      font-size: 16px;
+      white-space: nowrap;
+      background-color: rgb(48, 49, 51);
+      border-radius: 5px;
+      left: 0;
+      top: -100%;
+      margin-top: -5px;
+    }
+  }
+}

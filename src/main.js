@@ -5,11 +5,14 @@ import "@css/reset.scss"
 import "@css/iconfont/iconfont.css"
 import "@css/iconfont/iconfont"
 import "@css/design.scss"
+import "@css/directive.scss"
 import flow from "@js/design/flow"
 import store from "./store/index"
+import tip from "@js/common/directive/tip"
 
 Vue.config.productionTip = false
 
+Vue.directive('tip', tip)
 
 new Vue({
     el: "#app",
@@ -21,4 +24,5 @@ new Vue({
         flow.initNodes()
     }
 })
+
 
