@@ -6,7 +6,6 @@ import "@css/iconfont/iconfont.css"
 import "@css/iconfont/iconfont"
 import "@css/design.scss"
 import "@css/directive.scss"
-import flow from "@js/design/flow"
 import store from "./store/index"
 import tip from "@js/common/directive/tip"
 
@@ -20,9 +19,7 @@ new Vue({
     store,
     components: {App},
     template: '<App></App>',
-    mounted() {
-        flow.initNodes()
-    }
+    mounted() {}
 })
 
 

@@ -64,6 +64,10 @@
                 <!--两个节点相交的时候出现的XY轴-->
                 <p id="collideLineX"></p>
                 <p id="collideLineY"></p>
+                <!--点击svg节点时，复制出来的移动图形-->
+                <!--<div id="copyMoveShape">-->
+
+                <!--</div>-->
                 <svg id="designArea">
                     <defs>
                         <marker id="myArrow" viewBox="0 0 20 1" refX="20" refY="0" markerWidth="20" markerHeight="20" orient="auto">
@@ -73,9 +77,6 @@
                     <defs>
                         <line id="initLine" x1="100" y1="100" x2="300" y2="200" stroke="#000" marker-end="url(#myArrow)"></line>
                     </defs>
-                    <!--<path d="m 0 0 v -6 l 10 6 l -10 6 v -6" stroke="#f00" fill="transparent"></path>-->
-                    <!--<path d="M 100 100 h 300 v 100 h 100 s(100, 0, 200, 200)+" stroke="#f00" fill="transparent"></path>-->
-                    <!--<line x1="295" y1="50" x2="95" y2="75" stroke="#000" stroke-width="5" marker-end="url(#arrow)"></line>-->
                 </svg>
             </div>
             <attr-config>
@@ -95,6 +96,7 @@
     import Top from "@pages/designe/Top"
     import AttrConfig from "@pages/designe/AttrConfig"
     import PanelHeader from "@components/PanelHeader"
+    import flow from "@js/design/flow"
 
     export default {
         name: "Flow",
@@ -119,6 +121,8 @@
             }
         },
         mounted() {
+            console.log(`我被懒加载了`)
+            flow.initNodes()
         }
     }
 </script>

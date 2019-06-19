@@ -161,16 +161,15 @@ function bodyMouseup(e) {
         if (isInSvg) {
             const nodeInfoId = e.target.getAttribute("id")
             endNodeInfo = svgNodesInfo.find(item => item.id === nodeInfoId)
-            let line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-            line.setAttribute("stroke", "#000")
-            line.setAttribute("marker-end", "url(#myArrow)")
-            line.setAttribute("x1", startNodeInfo['right']['x'])
-            line.setAttribute("y1", startNodeInfo['right']['y'])
-            line.setAttribute("x2", endNodeInfo['left']['x'])
-            line.setAttribute("y2", endNodeInfo['left']['y'])
-            designArea.appendChild(line)
+            let polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
+            let points = startNodeInfo['right']['x'] + ',' + startNodeInfo['right']['y'] + ' '
+                + endNodeInfo['left']['x'] + ',' + endNodeInfo['left']['y']
+            polyline.setAttribute("stroke", "#000")
+            polyline.setAttribute("marker-end", "url(#myArrow)")
+            polyline.setAttribute("points", points)
+            designArea.appendChild(polyline)
             // let lineInfo = line.getBBox()
-            linesInfo.push(line)
+            linesInfo.push(polyline)
             startNodeInfo = {}
             endNodeInfo = {}
             svgNode = e.target
