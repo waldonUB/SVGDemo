@@ -11,12 +11,16 @@ let collideLineX // SVG节点相交的X轴的线
 let collideLineY // SVG节点相交的Y轴的线
 let collideNodeX // SVG中在X轴相交的节点
 let collideNodeY // SVG中在Y轴相交的节点
-let D_VALUE = 10 // 相交允许的差值
+const D_VALUE = 10 // 相交允许的差值
+const STROKE_WIDTH = 2 // 不同分辨率svg元素stroke的宽度可能会呈现不同像素
 let currentX // 鼠标当前在画布内的横坐标
 let currentY // 鼠标当前在画布内的横坐标
 let selectNode // 工具栏中被选中的节点
 let isInDesignArea = false // 是否放到流程画布中
 let toolBar // 点击画布中流程节点显示的工具栏
+let dragShape // 按下svg元素时，复制的元素
+let currentXYInShape // 当前鼠标在复制元素内的位置，先看看能不能用drag实现？尝试过drag，目前解决不了的是他鼠标下面有个小矩形的显示
+let isDrop // drag元素是否被放下
 /*-------------------------- 流程内的svg节点相关 --------------------------*/
 let processInfo // 设置当前流程信息
 let svgNode
@@ -36,9 +40,10 @@ function initNodes() {
     designArea = document.getElementById("designArea") // 流程设计画布
     collideLineX = document.getElementById("collideLineX") // SVG节点相交的X轴的线
     collideLineY = document.getElementById("collideLineY") // SVG节点相交的Y轴的线
+    dragShape = document.getElementById("copyMoveShape") // 移动SVG时复制的drag元素
     document.body.addEventListener('mousemove', bodyMove)
     document.body.addEventListener('mouseup', bodyMouseup, false)
-    designArea.addEventListener('mousemove', designAreaMove)
+    center.addEventListener('mousemove', designAreaMove)
     // 监听头部鼠标移进事件
     headerNode.addEventListener('mouseover', function () {
         if (svgNode) { // 防止从头部移除window窗口的监听范围
@@ -145,6 +150,12 @@ function bodyMouseup(e) {
     if (isMove) {
         isMove = false
     }
+    if (!isDrop) {
+        isDrop = true
+        let x = dragShape.style.left.slice(0, -2)
+        let y = dragShape.style.top.slice(0, -2)
+        setSvgNodePosition(x, y)
+    }
     let isInLi = isMouseupInLi(e)
     let isInSvg = isMouseupInSvg(e)
     // 弹起位置不在svg元素和工具栏内时，清除工具栏
@@ -196,6 +207,7 @@ function bodyMouseup(e) {
         }
     }
 }
+
 /**
  * 根据传入的流程id和坐标创建对应svg实例
  * */
@@ -267,10 +279,32 @@ function createRect(x , y) {
  * */
 function svgDown(e) {
     isMove = true
+    isDrop = false
+    currentX = e.clientX - toolBox.offsetWidth
+    currentY = e.clientY - headerNode.offsetHeight
+    console.log(currentX)
     e.preventDefault() // 防止出现拖拽的图标
     svgNode = e.target
+    let nodeInfo = svgNode.getBBox()
+    currentXYInShape = {
+        x: currentX - nodeInfo.x,
+        y: currentY - nodeInfo.y
+    }
+    copyMoveShape(nodeInfo)
     store.commit('changeCurrent', getCurrentNodeInfo(svgNode))
-    // store.state.currentNodeInfo = getCurrentNodeInfo(svgNode) 可以改变，并且在组件内监听到，但是vuex无法追踪这种变化
+    // 可以改变，并且在组件内监听到，但是vuex无法追踪这种变化
+    // store.state.currentNodeInfo = getCurrentNodeInfo(svgNode)
+}
+/**
+ * 按下svg节点时，复制的移动元素
+ * */
+function copyMoveShape(nodeInfo) {
+    dragShape.style.display = 'block' // 减少重排次数
+    dragShape.style.width = nodeInfo.width + STROKE_WIDTH + 'px'
+    dragShape.style.height = nodeInfo.height + STROKE_WIDTH + 'px'
+    dragShape.style.left = nodeInfo.x - currentXYInShape.x - STROKE_WIDTH + 'px'
+    dragShape.style.top = nodeInfo.y - currentXYInShape.y - STROKE_WIDTH + 'px'
+
 }
 /**
  * 鼠标在画布上移动
@@ -279,20 +313,22 @@ var designAreaMove = (function () {
     let flag = true
     return function (e) {
         if (svgNode && flag) { // 避免定义不必要的定时器
+            currentX = e.clientX - toolBox.offsetWidth
+            currentY = e.clientY - headerNode.offsetHeight
+            if (svgNode && !isDrop) {
+                // collideComputed()
+                // setSvgNodePosition()
+                dragover()
+            } else if (svgNode && isArrowDown) {
+                dottedLine.setAttribute("x2", currentX)
+                dottedLine.setAttribute("y2", currentY)
+                if (!dottedLine.parentNode) {
+                    designArea.appendChild(dottedLine)
+                }
+            }
             flag = false
             setTimeout(function () { // 节流用的
-                currentX = e.clientX - toolBox.offsetWidth
-                currentY = e.clientY - headerNode.offsetHeight
-                if (svgNode && isMove) {
-                    collideComputed()
-                    setSvgNodePosition()
-                } else if (svgNode && isArrowDown) {
-                    dottedLine.setAttribute("x2", currentX)
-                    dottedLine.setAttribute("y2", currentY)
-                    if (!dottedLine.parentNode) {
-                        designArea.appendChild(dottedLine)
-                    }
-                }
+
                 flag = true
             }, 20)
         }
@@ -331,6 +367,13 @@ function collideComputed() {
 }
 
 /**
+ * 移动时，设置拷贝节点的坐标
+ * */
+function dragover() {
+    dragShape.style.left = currentX - currentXYInShape.x - STROKE_WIDTH + 'px'
+    dragShape.style.top = currentY - currentXYInShape.y - STROKE_WIDTH + 'px'
+}
+/**
  * 在移动或弹起时，设置流程节点位置
  * */
 function setSvgNodePosition(x, y) {
@@ -339,8 +382,8 @@ function setSvgNodePosition(x, y) {
     let nodeInfo = svgNode.getBBox()
     switch (svgNode.nodeName) {
         case 'circle':
-            svgNode.setAttribute("cx", currentX)
-            svgNode.setAttribute("cy", currentY)
+            svgNode.setAttribute("cx", Number(currentX) + Number(svgNode.getAttribute("r")) + STROKE_WIDTH)
+            svgNode.setAttribute("cy", Number(currentY) + Number(svgNode.getAttribute("r")) + STROKE_WIDTH)
             break;
         case 'rect':
             svgNode.setAttribute("x", (currentX - nodeInfo.width / 2))

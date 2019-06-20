@@ -65,9 +65,7 @@
                 <p id="collideLineX"></p>
                 <p id="collideLineY"></p>
                 <!--点击svg节点时，复制出来的移动图形-->
-                <!--<div id="copyMoveShape">-->
-
-                <!--</div>-->
+                <div id="copyMoveShape"></div>
                 <svg id="designArea">
                     <defs>
                         <marker id="myArrow" viewBox="0 0 20 1" refX="20" refY="0" markerWidth="20" markerHeight="20" orient="auto">
@@ -121,7 +119,6 @@
             }
         },
         mounted() {
-            console.log(`我被懒加载了`)
             flow.initNodes()
         }
     }
