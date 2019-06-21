@@ -24,7 +24,6 @@ let isDrop // drag元素是否被放下
 /*-------------------------- 流程内的svg节点相关 --------------------------*/
 let processInfo // 设置当前流程信息
 let svgNode
-let isMove = false // 判断svg元素是允许移动
 let isArrowDown = false // 判断箭头是否被按下
 let dottedLine // 箭头按下的虚线
 let svgNodesInfo = [] // 画布上所有svg节点的信息数组
@@ -44,6 +43,7 @@ function initNodes() {
     document.body.addEventListener('mousemove', bodyMove)
     document.body.addEventListener('mouseup', bodyMouseup, false)
     center.addEventListener('mousemove', designAreaMove)
+    center.addEventListener('mousedown', designAreaDown)
     // 监听头部鼠标移进事件
     headerNode.addEventListener('mouseover', function () {
         if (svgNode) { // 防止从头部移除window窗口的监听范围
@@ -146,27 +146,28 @@ function bodyMouseup(e) {
         selectNode = null
         document.body.style.overflow = 'auto'
     }
-    // 弹起后不再允许移动
-    if (isMove) {
-        isMove = false
-    }
-    if (!isDrop) {
+    // 有元素被选中并且被放下时
+    if (!isDrop && svgNode) {
         isDrop = true
         let x = dragShape.style.left.slice(0, -2)
         let y = dragShape.style.top.slice(0, -2)
         setSvgNodePosition(x, y)
+        // 添加节点操作栏
+        let nodeInfo = svgNode.getBBox()
+        toolBar = getToolBar(nodeInfo)
+        center.appendChild(toolBar)
     }
     let isInLi = isMouseupInLi(e)
     let isInSvg = isMouseupInSvg(e)
-    // 弹起位置不在svg元素和工具栏内时，清除工具栏
-    if (toolBar && toolBar.parentNode && !isInLi && !isInSvg) {
-        toolBar.parentNode.removeChild(toolBar)
-    }
-    // 弹起位置在画布中并且不再SVG元素和工具栏内，属性栏信息变回当前流程
-    if (isInDesignArea && !isInLi && !isInSvg) {
-        // 设置当前流程信息
-        store.commit('changeCurrent', processInfo)
-    }
+    // 弹起位置不在svg元素和工具栏内时，清除工具栏（这个留着点击空白区域的时候情况）
+    // if (toolBar && toolBar.parentNode && !isInLi && !isInSvg) {
+    //     toolBar.parentNode.removeChild(toolBar)
+    // }
+    // 弹起位置在画布中并且不再SVG元素和工具栏内，属性栏信息变回当前流程（这个留着点击空白区域的时候情况）
+    // if (isInDesignArea && !isInLi && !isInSvg) {
+    //     // 设置当前流程信息
+    //     store.commit('changeCurrent', processInfo)
+    // }
     // 箭头连线按钮是否被按下
     if (isArrowDown) {
         if (isInSvg) {
@@ -190,7 +191,7 @@ function bodyMouseup(e) {
         }
         isArrowDown = false
     }
-    if (!isArrowDown && isInSvg) {
+    if (!isArrowDown) {
         collideLineX.style.display = 'none'
         collideLineY.style.display = 'none'
         if (collideNodeX) {
@@ -224,7 +225,7 @@ function processNodeFactory(id, x, y) {
             node = createRect(x, y)
     }
     node.addEventListener('mousedown', svgDown)
-    node.addEventListener('mouseup', designAreaUp, false)
+    // node.addEventListener('mouseup', designAreaUp, false)
     return node
 }
 
@@ -272,18 +273,13 @@ function createRect(x , y) {
     return userRect
 }
 
-
-
 /**
  * 鼠标按下svg节点
  * */
 function svgDown(e) {
-    isMove = true
     isDrop = false
     currentX = e.clientX - toolBox.offsetWidth
     currentY = e.clientY - headerNode.offsetHeight
-    console.log(currentX)
-    e.preventDefault() // 防止出现拖拽的图标
     svgNode = e.target
     let nodeInfo = svgNode.getBBox()
     currentXYInShape = {
@@ -291,6 +287,9 @@ function svgDown(e) {
         y: currentY - nodeInfo.y
     }
     copyMoveShape(nodeInfo)
+    // 添加节点操作栏
+    toolBar = getToolBar(nodeInfo)
+    center.appendChild(toolBar)
     store.commit('changeCurrent', getCurrentNodeInfo(svgNode))
     // 可以改变，并且在组件内监听到，但是vuex无法追踪这种变化
     // store.state.currentNodeInfo = getCurrentNodeInfo(svgNode)
@@ -302,8 +301,8 @@ function copyMoveShape(nodeInfo) {
     dragShape.style.display = 'block' // 减少重排次数
     dragShape.style.width = nodeInfo.width + STROKE_WIDTH + 'px'
     dragShape.style.height = nodeInfo.height + STROKE_WIDTH + 'px'
-    dragShape.style.left = nodeInfo.x - currentXYInShape.x - STROKE_WIDTH + 'px'
-    dragShape.style.top = nodeInfo.y - currentXYInShape.y - STROKE_WIDTH + 'px'
+    dragShape.style.left = nodeInfo.x - STROKE_WIDTH + 'px'
+    dragShape.style.top = nodeInfo.y - STROKE_WIDTH + 'px'
 
 }
 /**
@@ -313,28 +312,43 @@ var designAreaMove = (function () {
     let flag = true
     return function (e) {
         if (svgNode && flag) { // 避免定义不必要的定时器
-            currentX = e.clientX - toolBox.offsetWidth
-            currentY = e.clientY - headerNode.offsetHeight
-            if (svgNode && !isDrop) {
-                // collideComputed()
-                // setSvgNodePosition()
-                dragover()
-            } else if (svgNode && isArrowDown) {
-                dottedLine.setAttribute("x2", currentX)
-                dottedLine.setAttribute("y2", currentY)
-                if (!dottedLine.parentNode) {
-                    designArea.appendChild(dottedLine)
-                }
-            }
             flag = false
             setTimeout(function () { // 节流用的
-
+                currentX = e.clientX - toolBox.offsetWidth
+                currentY = e.clientY - headerNode.offsetHeight
+                if (svgNode && !isDrop) {
+                    // collideComputed()
+                    // setSvgNodePosition()
+                    dragover()
+                } else if (svgNode && isArrowDown) {
+                    dottedLine.setAttribute("x2", currentX)
+                    dottedLine.setAttribute("y2", currentY)
+                    if (!dottedLine.parentNode) {
+                        designArea.appendChild(dottedLine)
+                    }
+                }
                 flag = true
             }, 20)
         }
     }
 })()
 
+/**
+ * 在画布上鼠标按下
+ * */
+function designAreaDown(e) {
+    // let isInLi = isMouseupInLi(e)
+    // let isInSvg = isMouseupInSvg(e)
+    // 弹起位置不在svg元素和工具栏内时，清除工具栏（这个留着点击空白区域的时候情况）
+    // if (toolBar && toolBar.parentNode && !isInLi && !isInSvg) {
+    //     toolBar.parentNode.removeChild(toolBar)
+    // }
+    // 弹起位置在画布中并且不再SVG元素和工具栏内，属性栏信息变回当前流程（这个留着点击空白区域的时候情况）
+    // if (isInDesignArea && !isInLi && !isInSvg) {
+    //     // 设置当前流程信息
+    //     store.commit('changeCurrent', processInfo)
+    // }
+}
 /**
  * 画布内节点相交线操作
  * */
@@ -379,30 +393,21 @@ function dragover() {
 function setSvgNodePosition(x, y) {
     currentX = x || currentX
     currentY = y || currentY
-    let nodeInfo = svgNode.getBBox()
+    // let nodeInfo = svgNode.getBBox()
     switch (svgNode.nodeName) {
         case 'circle':
             svgNode.setAttribute("cx", Number(currentX) + Number(svgNode.getAttribute("r")) + STROKE_WIDTH)
             svgNode.setAttribute("cy", Number(currentY) + Number(svgNode.getAttribute("r")) + STROKE_WIDTH)
             break;
         case 'rect':
-            svgNode.setAttribute("x", (currentX - nodeInfo.width / 2))
-            svgNode.setAttribute("y", (currentY - nodeInfo.height / 2))
+            svgNode.setAttribute("x", currentX + STROKE_WIDTH)
+            svgNode.setAttribute("y", currentY + STROKE_WIDTH)
             break;
     }
     // const currentNodeId = svgNode.getAttribute("id")
     const currentSvgNodeInfo = getSvgNodeInfo(svgNode.getBBox(), svgNode.id)
     svgNodesInfo.push(currentSvgNodeInfo)
     console.log(svgNodesInfo)
-}
-
-/**
- * 流程画布内，svg元素鼠标弹起事件
- * */
-function designAreaUp(e) {
-    let currentNode = e.target.getBBox()
-    toolBar = getToolBar(currentNode)
-    center.appendChild(toolBar)
 }
 
 /**
@@ -424,9 +429,9 @@ let getToolBar = (function () {
         trash.addEventListener('click', trashFn, false)
         arrow.addEventListener('mousedown', arrowDownFn)
     }
-    return function (currentNode) {
-        toolBar.style.left = (currentNode.x + currentNode.width) + 'px'
-        toolBar.style.top = (currentNode.y - 30) + 'px'
+    return function (nodeInfo) {
+        toolBar.style.left = (nodeInfo.x + nodeInfo.width) + 'px'
+        toolBar.style.top = (nodeInfo.y - 30) + 'px'
         return toolBar
     }
 }())
@@ -518,7 +523,7 @@ function trashFn(e) {
  * 工具栏arrow按下的触发事件
  * */
 function arrowDownFn() {
-    let currentNode = svgNode.getBBox()
+    let nodeInfo = svgNode.getBBox()
     let nodeInfoId = svgNode.getAttribute("id")
     startNodeInfo = svgNodesInfo.find(item => item.id === nodeInfoId)
     isArrowDown = true
@@ -527,8 +532,8 @@ function arrowDownFn() {
         dottedLine.setAttribute("stroke", "#000")
         dottedLine.setAttribute("stroke-dasharray", "1 2")
     }
-    let nodeCenterX = currentNode.x + (currentNode.width / 2)
-    let nodeCenterY = currentNode.y + (currentNode.height / 2)
+    let nodeCenterX = nodeInfo.x + (nodeInfo.width / 2)
+    let nodeCenterY = nodeInfo.y + (nodeInfo.height / 2)
     dottedLine.setAttribute("x1", nodeCenterX.toString())
     dottedLine.setAttribute("y1", nodeCenterY.toString())
 }
