@@ -15,7 +15,16 @@ module.exports = {
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
-        port: 9000
+        port: 9000,
+        proxy: {
+            '/api': {
+                target: 'http://localhost:8080', // 代理服务器路径
+                pathRewrite: {
+                    '^/api': '/gc' // 重写路径
+                },
+                changeOrigin: true // 是否跨域
+            }
+        }
     },
     resolve: {
         extensions: ['.js', '.vue', '.json'],
