@@ -43,23 +43,23 @@
 </template>
 
 <script>
-    import AttrPanelHeader from "@pages/designe/attrConfigPanel/AttrPanelHeader"
-    export default {
-        name: "ProcessPanel",
-        components: {AttrPanelHeader},
-        data() {
-            return {
-                processInfo: {
-                    processId: '',
-                    processName: '',
-                    describe: ''
-                }
-            }
-        },
-        deactivated() {
-
-        }
+import AttrPanelHeader from '@pages/designe/attrConfigPanel/AttrPanelHeader'
+export default {
+  name: 'ProcessPanel',
+  components: { AttrPanelHeader },
+  data () {
+    return {
+      processInfo: {
+        processId: '',
+        processName: '',
+        describe: ''
+      }
     }
+  },
+  deactivated () {
+
+  }
+}
 </script>
 
 <style lang="scss" scoped>

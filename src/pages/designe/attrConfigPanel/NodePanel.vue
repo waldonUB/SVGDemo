@@ -58,33 +58,33 @@
 </template>
 
 <script>
-    import AttrPanelHeader from "@pages/designe/attrConfigPanel/AttrPanelHeader"
-    export default {
-        name: "NodePanel",
-        components: {AttrPanelHeader},
-        props: {
-            nodeType: {
-                require: true,
-                type: String
-            }
-        },
-        data() {
-            return {
-                nodeInfo: {
-                    nodeId: '',
-                    nodeName: '',
-                    nodeDescribe: '',
-                }
-            }
-        },
-        activated() {
-        },
-        mounted() {
-            let type = this.$store.state.currentNodeInfo.type
-            this.$store.commit('nodeIncrease', type)
-            this.nodeInfo.nodeId = type + this.$store.state.nodeTypes[type].count
-        }
+import AttrPanelHeader from '@pages/designe/attrConfigPanel/AttrPanelHeader'
+export default {
+  name: 'NodePanel',
+  components: { AttrPanelHeader },
+  props: {
+    nodeType: {
+      require: true,
+      type: String
     }
+  },
+  data () {
+    return {
+      nodeInfo: {
+        nodeId: '',
+        nodeName: '',
+        nodeDescribe: ''
+      }
+    }
+  },
+  activated () {
+  },
+  mounted () {
+    const type = this.$store.state.currentNodeInfo.type
+    this.$store.commit('nodeIncrease', type)
+    this.nodeInfo.nodeId = type + this.$store.state.nodeTypes[type].count
+  }
+}
 </script>
 
 <style lang="scss" scoped>

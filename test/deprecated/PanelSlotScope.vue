@@ -12,12 +12,12 @@
 </template>
 
 <script>
-    import AttrPanelHeader from "../../src/pages/designe/attrConfigPanel/AttrPanelHeader"
-    export default {
-        name: "PanelSlotScope",
-        components: {AttrPanelHeader},
-        props: ['processList']
-    }
+import AttrPanelHeader from '../../src/pages/designe/attrConfigPanel/AttrPanelHeader'
+export default {
+  name: 'PanelSlotScope',
+  components: { AttrPanelHeader },
+  props: ['processList']
+}
 </script>
 
 <style lang="scss" scoped>

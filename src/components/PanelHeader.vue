@@ -8,13 +8,13 @@
 </template>
 
 <script>
-    export default {
-        name: "PanelHeader",
-        data() {
-            return {
-            }
-        }
+export default {
+  name: 'PanelHeader',
+  data () {
+    return {
     }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

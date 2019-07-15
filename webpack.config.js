@@ -15,7 +15,7 @@ module.exports = {
     devServer: {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
-        port: 9000,
+        port: 8085,
         proxy: {
             '/api': {
                 target: 'http://localhost:8080', // 代理服务器路径
@@ -24,7 +24,10 @@ module.exports = {
                 },
                 changeOrigin: true // 是否跨域
             }
-        }
+        },
+        host: '0.0.0.0', // 可以把package.json的--的配置写到这里
+        inline: true
+        // mode: 'development' 没有这个属性，只能在package.json中配置
     },
     resolve: {
         extensions: ['.js', '.vue', '.json'],
@@ -63,7 +66,7 @@ module.exports = {
                 //     loader: 'px2rem-loader',
                 //     // options here
                 //     options: {
-                //         remUnit: 28,
+                //         remUnit: 75,
                 //         remPrecision: 8
                 //     }
                 // },

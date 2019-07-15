@@ -5,20 +5,20 @@
 </template>
 
 <script>
-    export default {
-        name: "Btn",
-        props: {
-            // props为引用类型时和父组件指向同一块内存地址？
-            btnType: {
-                require: true,
-                type: String,
-                default: 'success'
-            }
-        },
-        data() {
-            return {}
-        }
+export default {
+  name: 'Btn',
+  props: {
+    // props为引用类型时和父组件指向同一块内存地址？
+    btnType: {
+      require: true,
+      type: String,
+      default: 'success'
     }
+  },
+  data () {
+    return {}
+  }
+}
 </script>
 
 <style scoped>

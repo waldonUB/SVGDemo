@@ -91,37 +91,37 @@
 </template>
 
 <script>
-    import Top from "@pages/designe/Top"
-    import AttrConfig from "@pages/designe/AttrConfig"
-    import PanelHeader from "@components/PanelHeader"
-    import flow from "@js/design/flow"
+import Top from '@pages/designe/Top'
+import AttrConfig from '@pages/designe/AttrConfig'
+import PanelHeader from '@components/PanelHeader'
+import flow from '@js/design/flow'
 
-    export default {
-        name: "Flow",
-        components: {Top, AttrConfig, PanelHeader},
-        watch: {
-            '$store.state.currentNodeInfo.id' (newVal) {
-                // console.log(`flow watch currentNodeInfo : ` + newVal)
-            }
-        },
-        data() {
-            return {
-                processInfo: {},
-                nodeInfo: {}
-            }
-        },
-        methods: {
-            updateProcessName (data) {
-                this.processInfo.processName = data
-            },
-            updateNodeName (data) {
-                this.nodeInfo.nodeName = data
-            }
-        },
-        mounted() {
-            flow.initNodes()
-        }
+export default {
+  name: 'Flow',
+  components: { Top, AttrConfig, PanelHeader },
+  watch: {
+    '$store.state.currentNodeInfo.id' (newVal) {
+      // console.log(`flow watch currentNodeInfo : ` + newVal)
     }
+  },
+  data () {
+    return {
+      processInfo: {},
+      nodeInfo: {}
+    }
+  },
+  methods: {
+    updateProcessName (data) {
+      this.processInfo.processName = data
+    },
+    updateNodeName (data) {
+      this.nodeInfo.nodeName = data
+    }
+  },
+  mounted () {
+    flow.initNodes()
+  }
+}
 </script>
 
 <style lang="scss" scoped>

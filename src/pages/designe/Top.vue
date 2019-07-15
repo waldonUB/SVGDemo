@@ -24,41 +24,41 @@
 </template>
 
 <script>
-    import PanelHeader from "@components/PanelHeader"
-    import {getInitBpmn} from "../../js/common/util";
-    export default {
-        name: "Top",
-        components: {PanelHeader},
-        watch: {
-            'module.currentNodeInfo.id' (newVal) {
-                console.log(`watch currentNodeInfo : ` + newVal)
-            }
-        },
-        data() {
-            return {
-                module: null,
-                tips: {
-                    save: '保存流程',
-                    lineGraph: '添加折点'
-                }
-            }
-        },
-        methods: {
-            saveFlow() {
-                let initBpmn = getInitBpmn() // 获取初始化的BPMN文件
-                let bpmMap = JSON.parse(initBpmn)
-                let [process, diagram] = bpmMap.elements[0].elements // 将节点事件和图形坐标界面分离
-                let nodesEvent = process.elements // 获取所有节点事件
-                nodesEvent.push('123')
-                nodesEvent.push('456')
-                console.log(bpmMap)
-                console.log(process)
-                console.log(diagram)
-            }
-        },
-        mounted() {
-        }
+import PanelHeader from '@components/PanelHeader'
+import { getInitBpmn } from '../../js/common/util' 
+export default {
+  name: 'Top',
+  components: { PanelHeader },
+  watch: {
+    'module.currentNodeInfo.id' (newVal) {
+      console.log(`watch currentNodeInfo : ` + newVal)
     }
+  },
+  data () {
+    return {
+      module: null,
+      tips: {
+        save: '保存流程',
+        lineGraph: '添加折点'
+      }
+    }
+  },
+  methods: {
+    saveFlow () {
+      const initBpmn = getInitBpmn() // 获取初始化的BPMN文件
+      const bpmMap = JSON.parse(initBpmn)
+      const [process, diagram] = bpmMap.elements[0].elements // 将节点事件和图形坐标界面分离
+      const nodesEvent = process.elements // 获取所有节点事件
+      nodesEvent.push('123')
+      nodesEvent.push('456')
+      console.log(bpmMap)
+      console.log(process)
+      console.log(diagram)
+    }
+  },
+  mounted () {
+  }
+}
 </script>
 
 <style lang="scss" scoped>

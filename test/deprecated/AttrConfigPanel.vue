@@ -50,42 +50,42 @@
 </template>
 
 <script>
-    export default {
-        name: "AttrConfigPanel",
-        props: {
-            attrInfo: {
-                require: true,
-                type: Object
-            }
-        },
-        data() {
-            return {
-                foldState: 'unfold',
-                processInfo: {
-                    processName: '',
-                    describe: ''
-                },
-                nodeInfo: {
-                    nodeId: '',
-                    nodeName: '',
-                    nodeDescribe: '',
-                }
-            }
-        },
-        watch: {
-            'processInfo.processName'(newVal) {
-                this.$emit('editProcessName', newVal)
-            },
-            'nodeInfo.nodeName'(newVal) {
-                this.$emit('editNodeName', newVal)
-            }
-        },
-        methods: {
-            toggleFold() {
-                this.foldState = (this.foldState === 'unfold') ? 'fold' : 'unfold'
-            }
-        }
+export default {
+  name: 'AttrConfigPanel',
+  props: {
+    attrInfo: {
+      require: true,
+      type: Object
     }
+  },
+  data () {
+    return {
+      foldState: 'unfold',
+      processInfo: {
+        processName: '',
+        describe: ''
+      },
+      nodeInfo: {
+        nodeId: '',
+        nodeName: '',
+        nodeDescribe: ''
+      }
+    }
+  },
+  watch: {
+    'processInfo.processName' (newVal) {
+      this.$emit('editProcessName', newVal)
+    },
+    'nodeInfo.nodeName' (newVal) {
+      this.$emit('editNodeName', newVal)
+    }
+  },
+  methods: {
+    toggleFold () {
+      this.foldState = (this.foldState === 'unfold') ? 'fold' : 'unfold'
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
