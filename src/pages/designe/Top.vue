@@ -25,7 +25,7 @@
 
 <script>
 import PanelHeader from '@components/PanelHeader'
-import { getInitBpmn } from '../../js/common/util' 
+import { getInitBpmn } from '../../js/common/util'
 export default {
   name: 'Top',
   components: { PanelHeader },

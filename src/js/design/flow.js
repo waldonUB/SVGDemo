@@ -17,6 +17,7 @@ let currentX // 鼠标当前在画布内的横坐标
 let currentY // 鼠标当前在画布内的横坐标
 let selectNode // 工具栏中被选中的节点
 let isInDesignArea = false // 是否放到流程画布中
+let isInDragShape = false // 是否在抓取元素中
 let toolBar // 点击画布中流程节点显示的工具栏
 let dragShape // 按下svg元素时，复制的元素
 let currentXYInShape // 当前鼠标在复制元素内的位置，先看看能不能用drag实现？尝试过drag，目前解决不了的是他鼠标下面有个小矩形的显示
@@ -39,7 +40,7 @@ function initNodes () {
   designArea = document.getElementById('designArea') // 流程设计画布
   collideLineX = document.getElementById('collideLineX') // SVG节点相交的X轴的线
   collideLineY = document.getElementById('collideLineY') // SVG节点相交的Y轴的线
-  dragShape = document.getElementById('copyMoveShape') // 移动SVG时复制的drag元素
+  dragShape = document.getElementById('dragShape') // 移动SVG时复制的drag元素
   document.body.addEventListener('mousemove', bodyMove)
   document.body.addEventListener('mouseup', bodyMouseup, false)
   center.addEventListener('mousemove', designAreaMove)
@@ -50,6 +51,8 @@ function initNodes () {
       svgNode = null
     }
   })
+  // 监听是否在抓取元素中弹起
+  dragShape.addEventListener('click', dragShapeMouseup)
   for (const node of nodes) {
     node.addEventListener('mousedown', function (e) {
       e.preventDefault() // 阻止默认事件
@@ -129,6 +132,7 @@ var bodyMove = (function () {
  * */
 function bodyMouseup (e) {
   // 从左边工具栏拖拽进画布
+  debugger
   getOffsetXY(e)
   if (selectNode) {
     document.body.removeChild(selectNode)
@@ -156,12 +160,13 @@ function bodyMouseup (e) {
     toolBar = getToolBar(nodeInfo)
     center.appendChild(toolBar)
   }
-  //   const isInLi = isMouseupInLi(e)
+  const isInLi = isMouseupInLi(e)
   const isInSvg = isMouseupInSvg(e)
+  // const isInDragShape = isMouseupInDragShape(e)
   // 弹起位置不在svg元素和工具栏内时，清除工具栏（这个留着点击空白区域的时候情况）
-  // if (toolBar && toolBar.parentNode && !isInLi && !isInSvg) {
-  //     toolBar.parentNode.removeChild(toolBar)
-  // }
+  if (toolBar && toolBar.parentNode && !isInLi && !isInDragShape) {
+    toolBar.parentNode.removeChild(toolBar)
+  }
   // 弹起位置在画布中并且不再SVG元素和工具栏内，属性栏信息变回当前流程（这个留着点击空白区域的时候情况）
   // if (isInDesignArea && !isInLi && !isInSvg) {
   //     // 设置当前流程信息
@@ -205,6 +210,17 @@ function bodyMouseup (e) {
       // 设置节点的横坐标值
       setSvgNodePosition(collideNodeY.center.x, currentY)
     }
+  }
+}
+
+/**
+ * 抓取元素弹起事件
+ * @param {*} e 抓取元素
+ */
+function dragShapeMouseup (e) {
+  debugger
+  if (e.target.id === 'dragShape') {
+    isInDragShape = true
   }
 }
 
@@ -285,7 +301,7 @@ function svgDown (e) {
     x: currentX - nodeInfo.x,
     y: currentY - nodeInfo.y
   }
-  copyMoveShape(nodeInfo)
+  startDragShape(nodeInfo)
   // 添加节点操作栏
   toolBar = getToolBar(nodeInfo)
   center.appendChild(toolBar)
@@ -296,7 +312,7 @@ function svgDown (e) {
 /**
  * 按下svg节点时，复制的移动元素
  * */
-function copyMoveShape (nodeInfo) {
+function startDragShape (nodeInfo) {
   dragShape.style.display = 'block' // 减少重排次数
   dragShape.style.width = nodeInfo.width + STROKE_WIDTH + 'px'
   dragShape.style.height = nodeInfo.height + STROKE_WIDTH + 'px'
@@ -398,13 +414,15 @@ function setSvgNodePosition (x, y) {
       svgNode.setAttribute('cy', Number(currentY) + Number(svgNode.getAttribute('r')) + STROKE_WIDTH)
       break
     case 'rect':
-      svgNode.setAttribute('x', currentX + STROKE_WIDTH)
-      svgNode.setAttribute('y', currentY + STROKE_WIDTH)
+      svgNode.setAttribute('x', Number(currentX) + STROKE_WIDTH)
+      svgNode.setAttribute('y', Number(currentY) + STROKE_WIDTH)
       break
   }
   // const currentNodeId = svgNode.getAttribute("id")
   const currentSvgNodeInfo = getSvgNodeInfo(svgNode.getBBox(), svgNode.id)
-  svgNodesInfo.push(currentSvgNodeInfo)
+  const index = svgNodesInfo.findIndex(item => item.id === svgNode.id)
+  svgNodesInfo.splice(index, 1, currentSvgNodeInfo)
+  // svgNodesInfo.push(currentSvgNodeInfo)
   console.log(svgNodesInfo)
 }
 
@@ -447,6 +465,15 @@ function isMouseupInSvg (e) {
     default:
       return false
   }
+}
+
+/**
+ * 判断是否在复制的虚线节点中弹起
+ */
+function isMouseupInDragShape (e) {
+  debugger
+  const nodeId = e.target.id
+  return nodeId === 'dragShape'
 }
 
 /**

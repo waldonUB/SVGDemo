@@ -1,4 +1,8 @@
+**/.idea/
+**/.vscode/
+**/node_modules/
 **/config/
 **/dist/
 **/main.js
 **/test/
+**/css/
