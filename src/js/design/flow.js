@@ -17,7 +17,6 @@ let currentX // 鼠标当前在画布内的横坐标
 let currentY // 鼠标当前在画布内的横坐标
 let selectNode // 工具栏中被选中的节点
 let isInDesignArea = false // 是否放到流程画布中
-let isInDragShape = false // 是否在抓取元素中
 let toolBar // 点击画布中流程节点显示的工具栏
 let dragShape // 按下svg元素时，复制的元素
 let currentXYInShape // 当前鼠标在复制元素内的位置，先看看能不能用drag实现？尝试过drag，目前解决不了的是他鼠标下面有个小矩形的显示
@@ -32,6 +31,131 @@ let startNodeInfo = {} // 连线开始的svg节点的信息
 let endNodeInfo = {} // 连线结束的svg节点的信息
 const linesInfo = [] // 连接线信息集合
 
+/* --------------监听事件开始-------------- */
+// 鼠标弹起事件
+
+/**
+ * body内的鼠标弹起事件
+ * */
+function bodyMouseup (e) {
+  // 从左边工具栏拖拽进画布
+  const x = e.clientX - toolBox.offsetWidth
+  const y = e.clientY - headerNode.offsetHeight
+  getOffsetXY(e)
+  if (selectNode) {
+    document.body.removeChild(selectNode)
+    if (isInDesignArea) {
+      const id = selectNode.id
+      const node = processNodeFactory(id, x, y)
+      const nodeInfoId = id + '-' + getUUID()
+      node.setAttribute('id', nodeInfoId)
+      designArea.appendChild(node)
+      svgNodesInfo.push(getSvgNodeInfo(node.getBBox(), nodeInfoId))
+    }
+    selectNode = null
+    document.body.style.overflow = 'auto'
+  }
+  // 有元素被选中并且被放下时
+  if (!isDrop && svgNode) {
+    isDrop = true
+    const dragShapeX = dragShape.style.left.slice(0, -2)
+    const dragShapeY = dragShape.style.top.slice(0, -2)
+    setSvgNodePosition(dragShapeX, dragShapeY)
+    // 添加节点操作栏
+    const nodeInfo = svgNode.getBBox()
+    toolBar = getToolBar(nodeInfo)
+    center.appendChild(toolBar)
+  }
+  const isInSvg = isMouseupInSvg(e)
+  // 鼠标弹起时，箭头按钮也被按下
+  if (isArrowDown) {
+    if (isInSvg) {
+      const nodeInfoId = e.target.getAttribute('id')
+      endNodeInfo = svgNodesInfo.find(item => item.id === nodeInfoId)
+      const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
+      const points = startNodeInfo['right']['x'] + ',' + startNodeInfo['right']['y'] + ' ' +
+                endNodeInfo['left']['x'] + ',' + endNodeInfo['left']['y']
+      polyline.setAttribute('stroke', '#000')
+      polyline.setAttribute('marker-end', 'url(#myArrow)')
+      polyline.setAttribute('points', points)
+      designArea.appendChild(polyline)
+      // let lineInfo = line.getBBox()
+      linesInfo.push(polyline)
+      startNodeInfo = {}
+      endNodeInfo = {}
+      svgNode = e.target
+      // 添加节点操作栏
+      const nodeInfo = svgNode.getBBox()
+      toolBar = getToolBar(nodeInfo)
+      center.appendChild(toolBar)
+      // 添加拖拽图形
+      dragShape.style.left = nodeInfo.x - STROKE_WIDTH + 'px'
+      dragShape.style.top = nodeInfo.y - STROKE_WIDTH + 'px'
+    }
+    if (dottedLine && dottedLine.parentNode) {
+      dottedLine.parentNode.removeChild(dottedLine)
+    }
+    isArrowDown = false
+  } else {
+    collideLineX.style.display = 'none'
+    collideLineY.style.display = 'none'
+    if (collideNodeX) {
+      // 设置节点的纵坐标值
+      setSvgNodePosition(currentX, collideNodeX.center.y)
+      // 弹起时，再去除一次自身的值
+      svgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
+    }
+    if (collideNodeY) {
+      // 设置节点的横坐标值
+      setSvgNodePosition(collideNodeY.center.x, currentY)
+      // 弹起时，再去除一次自身的值
+      svgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
+    }
+  }
+}
+// 鼠标按下事件
+
+/**
+ * 鼠标在body按下事件
+ */
+function bodyMouseDown (e) {
+  const isInLi = isMouseupInLi(e)
+  const isInSvg = isMouseupInSvg(e)
+  // 按下位置在画布中并且不再SVG元素和工具栏内，属性栏信息变回当前流程（这个留着点击空白区域的时候情况）
+  if (isInDesignArea && !isInLi && !isInSvg) {
+    // 设置当前流程信息
+    store.commit('changeCurrent', processInfo)
+  }
+  if (toolBar && toolBar.parentNode && !isInLi && !isInSvg) {
+    toolBar.parentNode.removeChild(toolBar)
+  }
+}
+
+/**
+ * 工具栏arrow按下的触发事件
+ * */
+function arrowDownFn () {
+  const nodeInfo = svgNode.getBBox()
+  const nodeInfoId = svgNode.getAttribute('id')
+  startNodeInfo = svgNodesInfo.find(item => item.id === nodeInfoId)
+  isArrowDown = true
+  if (!dottedLine) {
+    dottedLine = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+    dottedLine.setAttribute('stroke', '#000')
+    dottedLine.setAttribute('stroke-dasharray', '1 2')
+  }
+  const nodeCenterX = nodeInfo.x + (nodeInfo.width / 2)
+  const nodeCenterY = nodeInfo.y + (nodeInfo.height / 2)
+  dottedLine.setAttribute('x1', nodeCenterX.toString())
+  dottedLine.setAttribute('y1', nodeCenterY.toString())
+}
+// 鼠标移动事件
+/* --------------监听事件结束-------------- */
+
+/* --------------判断元素位置开始-------------- */
+
+/* --------------判断元素位置结束-------------- */
+
 function initNodes () {
   nodes = document.getElementsByClassName('b-node') // 获取的所有流程节点
   headerNode = document.getElementById('headerNode') // 头部容器
@@ -41,8 +165,10 @@ function initNodes () {
   collideLineX = document.getElementById('collideLineX') // SVG节点相交的X轴的线
   collideLineY = document.getElementById('collideLineY') // SVG节点相交的Y轴的线
   dragShape = document.getElementById('dragShape') // 移动SVG时复制的drag元素
+  // 监听事件集合开始
   document.body.addEventListener('mousemove', bodyMove)
   document.body.addEventListener('mouseup', bodyMouseup, false)
+  document.body.addEventListener('mousedown', bodyMouseDown)
   center.addEventListener('mousemove', designAreaMove)
   center.addEventListener('mousedown', designAreaDown)
   // 监听头部鼠标移进事件
@@ -51,8 +177,6 @@ function initNodes () {
       svgNode = null
     }
   })
-  // 监听是否在抓取元素中弹起
-  dragShape.addEventListener('click', dragShapeMouseup)
   for (const node of nodes) {
     node.addEventListener('mousedown', function (e) {
       e.preventDefault() // 阻止默认事件
@@ -98,6 +222,7 @@ function initNodes () {
 // designArea.addEventListener('mouseout', function () {
 //     isInDesignArea = false
 // })
+
 /**
  * 以坐标计算的方式监听元素放的位置，避免绑定多个移入移除事件
  * */
@@ -108,6 +233,7 @@ function getOffsetXY (e) {
   const endY = headerNode.offsetHeight + designArea.clientHeight
   isInDesignArea = e.clientX > startX && e.clientY > startY && e.clientX < endX && e.clientY < endY
 }
+
 /**
  * 放置左边工具栏选择的元素
  * */
@@ -126,103 +252,6 @@ var bodyMove = (function () {
     }
   }
 })()
-
-/**
- * body内的鼠标弹起事件
- * */
-function bodyMouseup (e) {
-  // 从左边工具栏拖拽进画布
-  debugger
-  getOffsetXY(e)
-  if (selectNode) {
-    document.body.removeChild(selectNode)
-    if (isInDesignArea) {
-      const id = selectNode.id
-      const x = e.clientX - toolBox.offsetWidth
-      const y = e.clientY - headerNode.offsetHeight
-      const node = processNodeFactory(id, x, y)
-      const nodeInfoId = id + '-' + getUUID()
-      node.setAttribute('id', nodeInfoId)
-      designArea.appendChild(node)
-      svgNodesInfo.push(getSvgNodeInfo(node.getBBox(), nodeInfoId))
-    }
-    selectNode = null
-    document.body.style.overflow = 'auto'
-  }
-  // 有元素被选中并且被放下时
-  if (!isDrop && svgNode) {
-    isDrop = true
-    const x = dragShape.style.left.slice(0, -2)
-    const y = dragShape.style.top.slice(0, -2)
-    setSvgNodePosition(x, y)
-    // 添加节点操作栏
-    const nodeInfo = svgNode.getBBox()
-    toolBar = getToolBar(nodeInfo)
-    center.appendChild(toolBar)
-  }
-  const isInLi = isMouseupInLi(e)
-  const isInSvg = isMouseupInSvg(e)
-  // const isInDragShape = isMouseupInDragShape(e)
-  // 弹起位置不在svg元素和工具栏内时，清除工具栏（这个留着点击空白区域的时候情况）
-  if (toolBar && toolBar.parentNode && !isInLi && !isInDragShape) {
-    toolBar.parentNode.removeChild(toolBar)
-  }
-  // 弹起位置在画布中并且不再SVG元素和工具栏内，属性栏信息变回当前流程（这个留着点击空白区域的时候情况）
-  // if (isInDesignArea && !isInLi && !isInSvg) {
-  //     // 设置当前流程信息
-  //     store.commit('changeCurrent', processInfo)
-  // }
-  // 箭头连线按钮是否被按下
-  if (isArrowDown) {
-    if (isInSvg) {
-      const nodeInfoId = e.target.getAttribute('id')
-      endNodeInfo = svgNodesInfo.find(item => item.id === nodeInfoId)
-      const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
-      const points = startNodeInfo['right']['x'] + ',' + startNodeInfo['right']['y'] + ' ' +
-                endNodeInfo['left']['x'] + ',' + endNodeInfo['left']['y']
-      polyline.setAttribute('stroke', '#000')
-      polyline.setAttribute('marker-end', 'url(#myArrow)')
-      polyline.setAttribute('points', points)
-      designArea.appendChild(polyline)
-      // let lineInfo = line.getBBox()
-      linesInfo.push(polyline)
-      startNodeInfo = {}
-      endNodeInfo = {}
-      svgNode = e.target
-    }
-    if (dottedLine && dottedLine.parentNode) {
-      dottedLine.parentNode.removeChild(dottedLine)
-    }
-    isArrowDown = false
-  }
-  if (!isArrowDown) {
-    collideLineX.style.display = 'none'
-    collideLineY.style.display = 'none'
-    if (collideNodeX) {
-      // 弹起时，再去除一次自身的值
-      svgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
-      // 设置节点的纵坐标值
-      setSvgNodePosition(currentX, collideNodeX.center.y)
-    }
-    if (collideNodeY) {
-      // 弹起时，再去除一次自身的值
-      svgNodesInfo = svgNodesInfo.filter(item => item.id !== svgNode.id)
-      // 设置节点的横坐标值
-      setSvgNodePosition(collideNodeY.center.x, currentY)
-    }
-  }
-}
-
-/**
- * 抓取元素弹起事件
- * @param {*} e 抓取元素
- */
-function dragShapeMouseup (e) {
-  debugger
-  if (e.target.id === 'dragShape') {
-    isInDragShape = true
-  }
-}
 
 /**
  * 根据传入的流程id和坐标创建对应svg实例
@@ -468,15 +497,6 @@ function isMouseupInSvg (e) {
 }
 
 /**
- * 判断是否在复制的虚线节点中弹起
- */
-function isMouseupInDragShape (e) {
-  debugger
-  const nodeId = e.target.id
-  return nodeId === 'dragShape'
-}
-
-/**
  * 判断是否在工具栏的元素内，默认为li
  * */
 function isMouseupInLi (e) {
@@ -540,24 +560,7 @@ function trashFn (e) {
   if (currentToolBar && currentArea) {
     currentArea.removeChild(currentToolBar)
   }
-}
-/**
- * 工具栏arrow按下的触发事件
- * */
-function arrowDownFn () {
-  const nodeInfo = svgNode.getBBox()
-  const nodeInfoId = svgNode.getAttribute('id')
-  startNodeInfo = svgNodesInfo.find(item => item.id === nodeInfoId)
-  isArrowDown = true
-  if (!dottedLine) {
-    dottedLine = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    dottedLine.setAttribute('stroke', '#000')
-    dottedLine.setAttribute('stroke-dasharray', '1 2')
-  }
-  const nodeCenterX = nodeInfo.x + (nodeInfo.width / 2)
-  const nodeCenterY = nodeInfo.y + (nodeInfo.height / 2)
-  dottedLine.setAttribute('x1', nodeCenterX.toString())
-  dottedLine.setAttribute('y1', nodeCenterY.toString())
+  dragShape.style.display = 'none'
 }
 
 export default { initNodes }
