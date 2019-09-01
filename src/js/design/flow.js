@@ -2,6 +2,7 @@
 import { getUUID, getInitBpmn } from '../common/util'
 import store from '../../store/index'
 import vm from './variable/variable'
+import { bodyMousedown, arrowDownFn } from './event/mousedown'
 
 /* --------------监听事件开始-------------- */
 // 鼠标弹起事件

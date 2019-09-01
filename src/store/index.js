@@ -25,7 +25,8 @@ export default new Vuex.Store({
         type: 'userTask',
         count: 0
       }
-    }
+    },
+    persistentTest: sessionStorage.getItem("persistentTest")
   },
   mutations: {
     changeCurrent (state, currentNodeInfo) {
@@ -33,6 +34,10 @@ export default new Vuex.Store({
     },
     nodeIncrease (state, type) {
       state.nodeTypes[type].count++
+    },
+    persistentTest(state, param) {
+      sessionStorage.setItem("persistentTest", param)
+      state.persistentTest = param
     }
   },
   actions: {
