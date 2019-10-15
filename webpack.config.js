@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin') // 可以把缓存目录清掉
 const VueLoaderPlugin = require('vue-loader/lib/plugin') // vue-loader@15时,请确保引入这个插件！
 const CopyPlugin = require('copy-webpack-plugin') // 拷贝静态资源
-
+const version = new Date().getTime() // webpack打包加上版本
 // 设置别名
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -103,7 +103,7 @@ module.exports = {
     // })
   ],
   output: {
-    filename: '[name].min.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].' + version + '.min.js'
   }
 }
